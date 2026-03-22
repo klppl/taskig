@@ -90,6 +90,7 @@ func main() {
 	api.DELETE("/tasklists/:listId/tasks/:taskId", taskHandlers.HandleDeleteTask)
 	api.POST("/tasklists/:listId/tasks/:taskId/reschedule", taskHandlers.HandleRescheduleTask)
 	api.POST("/tasklists/:listId/tasks/:taskId/move", taskHandlers.HandleMoveTask)
+	api.POST("/tasklists/:listId/tasks/:taskId/subtasks", taskHandlers.HandleCreateSubtask)
 
 	e.Logger.Fatal(e.Start(":" + cfg.Port))
 }

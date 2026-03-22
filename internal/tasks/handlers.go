@@ -106,6 +106,28 @@ func (h *Handlers) HandleCreateTask(c echo.Context) error {
 	return ViewTaskItem(listID, *task, false).Render(c.Request().Context(), c.Response())
 }
 
+func (h *Handlers) HandleCreateSubtask(c echo.Context) error {
+	svc := auth.GetTasksClient(c)
+	if svc == nil {
+		return c.String(http.StatusBadRequest, "Not authenticated")
+	}
+	client := NewClient(svc)
+	listID := c.Param("listId")
+	parentID := c.Param("taskId")
+	title := c.FormValue("title")
+
+	if title == "" {
+		return c.String(http.StatusBadRequest, "Title is required")
+	}
+
+	task, err := client.CreateSubtask(listID, parentID, title)
+	if err != nil {
+		return renderError(c, "Failed to create subtask")
+	}
+
+	return ViewTaskItem(listID, *task, false).Render(c.Request().Context(), c.Response())
+}
+
 func (h *Handlers) HandleUpdateTask(c echo.Context) error {
 	svc := auth.GetTasksClient(c)
 	client := NewClient(svc)

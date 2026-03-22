@@ -112,6 +112,18 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 				</button>
 			</div>
 		}
+		if !inTodayView {
+			<button
+				type="button"
+				onclick={ showSubtaskInput(task.ID) }
+				class="hidden text-gray-400 transition hover:text-blue-500 group-hover:block dark:hover:text-blue-400"
+				title="Add subtask"
+			>
+				<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+				</svg>
+			</button>
+		}
 		<!-- Delete button -->
 		<button
 			hx-delete={ "/api/tasklists/" + listID + "/tasks/" + task.ID }
@@ -137,13 +149,35 @@ templ TaskTree(listID string, task tasks.Task, depth int) {
 		} else {
 			@TaskItem(listID, task, false)
 		}
-		if len(task.Children) > 0 {
-			<div id={ "children-" + task.ID }>
-				for _, child := range task.Children {
-					@TaskTree(listID, child, depth + 1)
-				}
-			</div>
-		}
+		<div id={ "children-" + task.ID }>
+			for _, child := range task.Children {
+				@TaskTree(listID, child, depth + 1)
+			}
+		</div>
+		<!-- Inline subtask form (hidden by default) -->
+		<form
+			id={ "subtask-form-" + task.ID }
+			hx-post={ "/api/tasklists/" + listID + "/tasks/" + task.ID + "/subtasks" }
+			hx-target={ "#children-" + task.ID }
+			hx-swap="beforeend"
+			hx-on::after-request="if(event.detail.successful){this.reset();this.style.display='none';}"
+			style={ fmt.Sprintf("display:none; padding-left:%drem", (depth+1) * 2) }
+			class="flex gap-2 px-3 py-1"
+		>
+			<input
+				type="text"
+				name="title"
+				placeholder="Add subtask..."
+				required
+				class="flex-1 rounded border border-gray-300 bg-transparent px-2 py-1 text-sm placeholder-gray-400 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:placeholder-gray-500"
+			/>
+			<button
+				type="submit"
+				class="rounded bg-blue-600 px-2 py-1 text-xs font-medium text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+			>
+				Add
+			</button>
+		</form>
 	</div>
 }
 
@@ -320,6 +354,18 @@ func dueDateClass(due string, completed bool) string {
 		return "text-amber-500 dark:text-amber-400"
 	}
 	return "text-gray-400 dark:text-gray-500"
+}
+
+script showSubtaskInput(taskID string) {
+	const form = document.getElementById('subtask-form-' + taskID);
+	if (!form) return;
+	// Ensure children container is visible
+	const children = document.getElementById('children-' + taskID);
+	if (children) children.style.display = '';
+	const btn = document.querySelector('[data-toggle-id="' + taskID + '"] svg');
+	if (btn) btn.style.transform = '';
+	form.style.display = '';
+	form.querySelector('input[name=title]').focus();
 }
 
 script setDueAndSubmit(due string) {
