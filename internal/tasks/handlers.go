@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/a-h/templ"
@@ -115,6 +116,7 @@ func (h *Handlers) HandleCreateSubtask(c echo.Context) error {
 	listID := c.Param("listId")
 	parentID := c.Param("taskId")
 	title := c.FormValue("title")
+	depth, _ := strconv.Atoi(c.FormValue("depth"))
 
 	if title == "" {
 		return c.String(http.StatusBadRequest, "Title is required")
@@ -125,7 +127,7 @@ func (h *Handlers) HandleCreateSubtask(c echo.Context) error {
 		return renderError(c, "Failed to create subtask")
 	}
 
-	return ViewTaskItem(listID, *task, false).Render(c.Request().Context(), c.Response())
+	return ViewTaskTree(listID, *task, depth).Render(c.Request().Context(), c.Response())
 }
 
 func (h *Handlers) HandleUpdateTask(c echo.Context) error {

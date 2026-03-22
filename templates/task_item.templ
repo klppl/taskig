@@ -164,6 +164,7 @@ templ TaskTree(listID string, task tasks.Task, depth int) {
 			style={ fmt.Sprintf("display:none; padding-left:%drem", (depth+1) * 2) }
 			class="flex gap-2 px-3 py-1"
 		>
+			<input type="hidden" name="depth" value={ fmt.Sprintf("%d", depth+1) }/>
 			<input
 				type="text"
 				name="title"
@@ -354,7 +355,9 @@ templ TaskDetailPanel(listID string, task tasks.Task) {
 			hx-target={ "#children-" + task.ID }
 			hx-swap="beforeend"
 			hx-on::after-request="if(event.detail.successful){this.reset();}"
-		></form>
+		>
+			<input type="hidden" name="depth" value="1"/>
+		</form>
 	</div>
 }
 

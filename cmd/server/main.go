@@ -31,6 +31,7 @@ func main() {
 	tasks.ViewTaskDetailEmpty = templates.TaskDetailEmpty
 	tasks.ViewTasklistSidebarOOB = templates.TasklistSidebarOOB
 	tasks.ViewTodayContent = templates.TodayContent
+	tasks.ViewTaskTree = templates.TaskTree
 
 	// Database
 	dbPath := cfg.DBPath

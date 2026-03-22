@@ -12,4 +12,5 @@ var (
 	ViewTaskDetailEmpty    func() templ.Component
 	ViewTasklistSidebarOOB func(taskLists []TaskList, activeID string) templ.Component
 	ViewTodayContent       func(taskItems []Task) templ.Component
+	ViewTaskTree           func(listID string, task Task, depth int) templ.Component
 )
