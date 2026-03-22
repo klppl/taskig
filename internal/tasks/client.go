@@ -14,8 +14,10 @@ type Task struct {
 	Notes     string
 	Due       string // YYYY-MM-DD or empty
 	Completed bool
+	Parent    string // parent task ID, empty if top-level
 	ListID    string
 	ListTitle string // populated in cross-list views (e.g. Today)
+	Children  []Task // populated by BuildTaskTree
 }
 
 // TaskList is the app's representation of a Google TaskList.
@@ -212,6 +214,36 @@ func ToTask(gt *gtasks.Task) Task {
 		Notes:     gt.Notes,
 		Due:       due,
 		Completed: gt.Status == "completed",
+		Parent:    gt.Parent,
+	}
+}
+
+// BuildTaskTree groups a flat task list into a tree based on Parent fields.
+// The API returns tasks in position order, so we preserve that ordering.
+func BuildTaskTree(tasks []Task) []Task {
+	childrenOf := make(map[string][]Task)
+	var roots []Task
+	for _, t := range tasks {
+		if t.Parent == "" {
+			roots = append(roots, t)
+		} else {
+			childrenOf[t.Parent] = append(childrenOf[t.Parent], t)
+		}
+	}
+	for i := range roots {
+		attachChildren(&roots[i], childrenOf)
+	}
+	return roots
+}
+
+func attachChildren(t *Task, childrenOf map[string][]Task) {
+	children := childrenOf[t.ID]
+	if len(children) == 0 {
+		return
+	}
+	t.Children = children
+	for i := range t.Children {
+		attachChildren(&t.Children[i], childrenOf)
 	}
 }
 

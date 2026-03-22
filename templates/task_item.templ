@@ -2,6 +2,7 @@ package templates
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/url"
 	"time"
 	"github.com/alex/google-tasks/internal/tasks"
@@ -29,7 +30,20 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 				</svg>
 			</span>
 		}
-		<!-- Complete checkbox -->
+		if len(task.Children) > 0 {
+			<button
+				type="button"
+				onclick={ toggleChildren(task.ID) }
+				class="flex h-4 w-4 items-center justify-center text-gray-400 transition hover:text-gray-600 dark:hover:text-gray-300"
+				data-toggle-id={ task.ID }
+			>
+				<svg class="h-3 w-3 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+				</svg>
+			</button>
+		} else if task.Parent == "" {
+			<span class="w-4"></span>
+		}
 		<input
 			type="checkbox"
 			checked?={ task.Completed }
@@ -111,6 +125,25 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
 			</svg>
 		</button>
+	</div>
+}
+
+templ TaskTree(listID string, task tasks.Task, depth int) {
+	<div data-task-id={ task.ID }>
+		if depth > 0 {
+			<div style={ fmt.Sprintf("padding-left: %drem", depth * 2) }>
+				@TaskItem(listID, task, false)
+			</div>
+		} else {
+			@TaskItem(listID, task, false)
+		}
+		if len(task.Children) > 0 {
+			<div id={ "children-" + task.ID }>
+				for _, child := range task.Children {
+					@TaskTree(listID, child, depth + 1)
+				}
+			</div>
+		}
 	</div>
 }
 
@@ -243,6 +276,19 @@ func listTitleQS(listTitle string) string {
 		return ""
 	}
 	return "?listTitle=" + url.QueryEscape(listTitle)
+}
+
+script toggleChildren(taskID string) {
+	const el = document.getElementById('children-' + taskID);
+	if (!el) return;
+	const btn = document.querySelector('[data-toggle-id="' + taskID + '"] svg');
+	if (el.style.display === 'none') {
+		el.style.display = '';
+		if (btn) btn.style.transform = '';
+	} else {
+		el.style.display = 'none';
+		if (btn) btn.style.transform = 'rotate(-90deg)';
+	}
 }
 
 func formatDue(due string) string {

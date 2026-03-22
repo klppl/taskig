@@ -46,10 +46,11 @@ func (h *Handlers) HandleDashboard(c echo.Context) error {
 			return c.String(http.StatusInternalServerError, "Failed to load tasks")
 		}
 	} else if activeListID != "" {
-		activeTasks, err = client.ListTasks(activeListID, !hideCompleted)
+		flat, err := client.ListTasks(activeListID, !hideCompleted)
 		if err != nil {
 			return c.String(http.StatusInternalServerError, "Failed to load tasks")
 		}
+		activeTasks = BuildTaskTree(flat)
 	}
 
 	return ViewDashboardPage(lists, activeListID, activeTasks, hideCompleted).Render(c.Request().Context(), c.Response())
@@ -62,10 +63,11 @@ func (h *Handlers) HandleListTasks(c echo.Context) error {
 	listTitle := c.QueryParam("title")
 	hideCompleted := readHideCompleted(c)
 
-	taskItems, err := client.ListTasks(listID, !hideCompleted)
+	flatTasks, err := client.ListTasks(listID, !hideCompleted)
 	if err != nil {
 		return renderError(c, "Failed to load tasks")
 	}
+	taskItems := BuildTaskTree(flatTasks)
 
 	ctx := c.Request().Context()
 	w := c.Response()
@@ -277,10 +279,11 @@ func (h *Handlers) HandleToggleHideCompleted(c echo.Context) error {
 	}
 	c.SetCookie(cookie)
 
-	taskItems, err := client.ListTasks(listID, !hideCompleted)
+	flatTasks, err := client.ListTasks(listID, !hideCompleted)
 	if err != nil {
 		return renderError(c, "Failed to load tasks")
 	}
+	taskItems := BuildTaskTree(flatTasks)
 
 	return ViewTaskListContent(listID, listTitle, taskItems, hideCompleted).Render(c.Request().Context(), c.Response())
 }

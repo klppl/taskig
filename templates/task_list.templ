@@ -49,7 +49,7 @@ templ TaskListContent(listID string, listTitle string, taskItems []tasks.Task, h
 		<!-- Task list -->
 		<div id="task-list" data-list-id={ listID } class="space-y-0.5">
 			for _, task := range taskItems {
-				@TaskItem(listID, task, false)
+				@TaskTree(listID, task, 0)
 			}
 		</div>
 		@sortableInit()

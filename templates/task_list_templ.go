@@ -106,7 +106,7 @@ func TaskListContent(listID string, listTitle string, taskItems []tasks.Task, hi
 			return templ_7745c5c3_Err
 		}
 		for _, task := range taskItems {
-			templ_7745c5c3_Err = TaskItem(listID, task, false).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = TaskTree(listID, task, 0).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
