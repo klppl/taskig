@@ -260,7 +260,7 @@ func dueDateClass(due string, completed bool) string {
 }
 
 script setDueAndSubmit(due string) {
-	const form = document.currentScript.closest("form");
+	const form = document.querySelector("#detail-panel form");
 	form.querySelector("[name=due]").value = due;
 	form.requestSubmit();
 }

@@ -701,13 +701,13 @@ func dueDateClass(due string, completed bool) string {
 
 func setDueAndSubmit(due string) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_setDueAndSubmit_1e97`,
-		Function: `function __templ_setDueAndSubmit_1e97(due){const form = document.currentScript.closest("form");
+		Name: `__templ_setDueAndSubmit_9522`,
+		Function: `function __templ_setDueAndSubmit_9522(due){const form = document.querySelector("#detail-panel form");
 	form.querySelector("[name=due]").value = due;
 	form.requestSubmit();
 }`,
-		Call:       templ.SafeScript(`__templ_setDueAndSubmit_1e97`, due),
-		CallInline: templ.SafeScriptInline(`__templ_setDueAndSubmit_1e97`, due),
+		Call:       templ.SafeScript(`__templ_setDueAndSubmit_9522`, due),
+		CallInline: templ.SafeScriptInline(`__templ_setDueAndSubmit_9522`, due),
 	}
 }
 
