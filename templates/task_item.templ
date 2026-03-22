@@ -49,6 +49,40 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 				{ formatDue(task.Due) }
 			</span>
 		}
+		<!-- Reschedule buttons (Today view only) -->
+		if inTodayView {
+			<div class="hidden items-center gap-1 group-hover:flex">
+				if isOverdue(task.Due) {
+					<button
+						hx-post={ "/api/tasklists/" + listID + "/tasks/" + task.ID + "/reschedule" }
+						hx-vals={ rescheduleVals(todayDate(), task.ListTitle) }
+						hx-target={ "#task-" + task.ID }
+						hx-swap="outerHTML swap:300ms"
+						class="rounded px-1.5 py-0.5 text-xs text-blue-600 transition hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
+					>
+						Today
+					</button>
+				}
+				<button
+					hx-post={ "/api/tasklists/" + listID + "/tasks/" + task.ID + "/reschedule" }
+					hx-vals={ rescheduleVals(tomorrowDate(), task.ListTitle) }
+					hx-target={ "#task-" + task.ID }
+					hx-swap="outerHTML swap:300ms"
+					class="rounded px-1.5 py-0.5 text-xs text-gray-500 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+				>
+					Tmrw
+				</button>
+				<button
+					hx-post={ "/api/tasklists/" + listID + "/tasks/" + task.ID + "/reschedule" }
+					hx-vals={ rescheduleVals(nextMondayDate(), task.ListTitle) }
+					hx-target={ "#task-" + task.ID }
+					hx-swap="outerHTML swap:300ms"
+					class="rounded px-1.5 py-0.5 text-xs text-gray-500 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+				>
+					Mon
+				</button>
+			</div>
+		}
 		<!-- Delete button -->
 		<button
 			hx-delete={ "/api/tasklists/" + listID + "/tasks/" + task.ID }
@@ -200,4 +234,32 @@ func dueDateClass(due string, completed bool) string {
 		return "text-amber-500 dark:text-amber-400"
 	}
 	return "text-gray-400 dark:text-gray-500"
+}
+
+func todayDate() string {
+	return time.Now().Format("2006-01-02")
+}
+
+func tomorrowDate() string {
+	return time.Now().AddDate(0, 0, 1).Format("2006-01-02")
+}
+
+func nextMondayDate() string {
+	t := time.Now()
+	daysUntilMonday := (8 - int(t.Weekday())) % 7
+	if daysUntilMonday == 0 {
+		daysUntilMonday = 7
+	}
+	return t.AddDate(0, 0, daysUntilMonday).Format("2006-01-02")
+}
+
+func isOverdue(due string) bool {
+	return due != "" && due < todayDate()
+}
+
+func rescheduleVals(due string, listTitle string) string {
+	if listTitle != "" {
+		return `{"due": "` + due + `", "listTitle": "` + listTitle + `"}`
+	}
+	return `{"due": "` + due + `"}`
 }
