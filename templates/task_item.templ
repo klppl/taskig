@@ -269,6 +269,26 @@ templ TaskDetailPanel(listID string, task tasks.Task) {
 					}
 				</div>
 			</div>
+			<!-- Add subtask -->
+			<div>
+				<label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">Add subtask</label>
+				<div class="flex gap-2">
+					<input
+						type="text"
+						form={ "detail-subtask-form-" + task.ID }
+						name="title"
+						placeholder="Subtask title..."
+						class="flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:focus:border-blue-400"
+					/>
+					<button
+						type="submit"
+						form={ "detail-subtask-form-" + task.ID }
+						class="rounded-md bg-gray-100 px-3 py-2 text-xs font-medium text-gray-600 transition hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
+					>
+						Add
+					</button>
+				</div>
+			</div>
 			<!-- Actions -->
 			<div class="mt-6 flex items-center justify-between border-t border-gray-200 pt-4 dark:border-gray-700">
 				<button
@@ -289,6 +309,13 @@ templ TaskDetailPanel(listID string, task tasks.Task) {
 				</button>
 			</div>
 		</form>
+		<form
+			id={ "detail-subtask-form-" + task.ID }
+			hx-post={ "/api/tasklists/" + listID + "/tasks/" + task.ID + "/subtasks" }
+			hx-target={ "#children-" + task.ID }
+			hx-swap="beforeend"
+			hx-on::after-request="if(event.detail.successful){this.reset();}"
+		></form>
 	</div>
 }
 
