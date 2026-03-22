@@ -1,0 +1,40 @@
+package templates
+
+import "github.com/alex/google-tasks/internal/tasks"
+
+templ TasklistSidebar(lists []tasks.TaskList, activeID string) {
+	<button
+		hx-get="/api/today"
+		hx-target="#task-panel"
+		hx-push-url="/dashboard?list=_today"
+		class={
+			"mb-1 w-full rounded-md px-3 py-2 text-left text-sm transition",
+			templ.KV("bg-gray-100 font-medium dark:bg-gray-800", activeID == "_today"),
+			templ.KV("hover:bg-gray-50 dark:hover:bg-gray-800/50", activeID != "_today"),
+		}
+	>
+		Today
+	</button>
+	<div class="mb-1 border-b border-gray-200 dark:border-gray-700"></div>
+	for _, list := range lists {
+		<button
+			hx-get={ "/api/tasklists/" + list.ID + "/tasks?title=" + list.Title }
+			hx-target="#task-panel"
+			hx-push-url={ "/dashboard?list=" + list.ID }
+			class={
+				"w-full rounded-md px-3 py-2 text-left text-sm transition",
+				templ.KV("bg-gray-100 font-medium dark:bg-gray-800", list.ID == activeID),
+				templ.KV("hover:bg-gray-50 dark:hover:bg-gray-800/50", list.ID != activeID),
+			}
+		>
+			{ list.Title }
+		</button>
+	}
+}
+
+// TasklistSidebarOOB renders the sidebar as an out-of-band HTMX swap.
+templ TasklistSidebarOOB(lists []tasks.TaskList, activeID string) {
+	<nav id="tasklist-sidebar" hx-swap-oob="innerHTML:#tasklist-sidebar">
+		@TasklistSidebar(lists, activeID)
+	</nav>
+}
