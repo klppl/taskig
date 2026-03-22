@@ -9,6 +9,7 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
+	"encoding/json"
 	"github.com/alex/google-tasks/internal/tasks"
 	"net/url"
 	"time"
@@ -49,7 +50,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("task-" + task.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 11, Col: 24}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 12, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -62,7 +63,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(task.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 12, Col: 24}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 13, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -108,7 +109,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs("/api/tasklists/" + listID + "/tasks/" + task.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 35, Col: 62}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 36, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -121,7 +122,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(taskVals(task))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 36, Col: 27}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 37, Col: 27}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -134,7 +135,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("#task-" + task.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 37, Col: 33}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 38, Col: 33}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -158,7 +159,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs("/api/tasklists/" + listID + "/tasks/" + task.ID + "/detail" + listTitleQS(task.ListTitle))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 43, Col: 102}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 44, Col: 102}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -184,7 +185,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(task.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 52, Col: 15}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 53, Col: 15}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -202,7 +203,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(task.ListTitle)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 57, Col: 20}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 58, Col: 20}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -243,7 +244,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(formatDue(task.Due))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 63, Col: 25}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 64, Col: 25}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
@@ -271,7 +272,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 				var templ_7745c5c3_Var17 string
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs("/api/tasklists/" + listID + "/tasks/" + task.ID + "/reschedule")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 71, Col: 80}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 72, Col: 80}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
@@ -284,7 +285,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 				var templ_7745c5c3_Var18 string
 				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(rescheduleVals(todayDate(), task.ListTitle))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 72, Col: 59}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 73, Col: 59}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 				if templ_7745c5c3_Err != nil {
@@ -297,7 +298,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 				var templ_7745c5c3_Var19 string
 				templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs("#task-" + task.ID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 73, Col: 36}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 74, Col: 36}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 				if templ_7745c5c3_Err != nil {
@@ -315,7 +316,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs("/api/tasklists/" + listID + "/tasks/" + task.ID + "/reschedule")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 81, Col: 79}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 82, Col: 79}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 			if templ_7745c5c3_Err != nil {
@@ -328,7 +329,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 			var templ_7745c5c3_Var21 string
 			templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(rescheduleVals(tomorrowDate(), task.ListTitle))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 82, Col: 61}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 83, Col: 61}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 			if templ_7745c5c3_Err != nil {
@@ -341,7 +342,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 			var templ_7745c5c3_Var22 string
 			templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs("#task-" + task.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 83, Col: 35}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 84, Col: 35}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 			if templ_7745c5c3_Err != nil {
@@ -354,7 +355,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 			var templ_7745c5c3_Var23 string
 			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs("/api/tasklists/" + listID + "/tasks/" + task.ID + "/reschedule")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 90, Col: 79}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 91, Col: 79}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 			if templ_7745c5c3_Err != nil {
@@ -367,7 +368,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 			var templ_7745c5c3_Var24 string
 			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(rescheduleVals(nextMondayDate(), task.ListTitle))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 91, Col: 63}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 92, Col: 63}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 			if templ_7745c5c3_Err != nil {
@@ -380,7 +381,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 			var templ_7745c5c3_Var25 string
 			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs("#task-" + task.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 92, Col: 35}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 93, Col: 35}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 			if templ_7745c5c3_Err != nil {
@@ -398,7 +399,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 		var templ_7745c5c3_Var26 string
 		templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs("/api/tasklists/" + listID + "/tasks/" + task.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 102, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 103, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 		if templ_7745c5c3_Err != nil {
@@ -411,7 +412,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 		var templ_7745c5c3_Var27 string
 		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs("#task-" + task.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 103, Col: 33}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 104, Col: 33}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 		if templ_7745c5c3_Err != nil {
@@ -487,7 +488,7 @@ func TaskDetailPanel(listID string, task tasks.Task) templ.Component {
 			var templ_7745c5c3_Var30 string
 			templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(task.ListTitle)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 127, Col: 56}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 128, Col: 56}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 			if templ_7745c5c3_Err != nil {
@@ -505,7 +506,7 @@ func TaskDetailPanel(listID string, task tasks.Task) templ.Component {
 		var templ_7745c5c3_Var31 string
 		templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs("/api/tasklists/" + listID + "/tasks/" + task.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 132, Col: 62}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 133, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 		if templ_7745c5c3_Err != nil {
@@ -523,7 +524,7 @@ func TaskDetailPanel(listID string, task tasks.Task) templ.Component {
 			var templ_7745c5c3_Var32 string
 			templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(task.ListTitle)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 137, Col: 64}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 138, Col: 64}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 			if templ_7745c5c3_Err != nil {
@@ -541,7 +542,7 @@ func TaskDetailPanel(listID string, task tasks.Task) templ.Component {
 		var templ_7745c5c3_Var33 string
 		templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(task.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 146, Col: 24}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 147, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 		if templ_7745c5c3_Err != nil {
@@ -554,7 +555,7 @@ func TaskDetailPanel(listID string, task tasks.Task) templ.Component {
 		var templ_7745c5c3_Var34 string
 		templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(task.Notes)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 159, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 160, Col: 18}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 		if templ_7745c5c3_Err != nil {
@@ -567,7 +568,7 @@ func TaskDetailPanel(listID string, task tasks.Task) templ.Component {
 		var templ_7745c5c3_Var35 string
 		templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(task.Due)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 167, Col: 22}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 168, Col: 22}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 		if templ_7745c5c3_Err != nil {
@@ -646,7 +647,7 @@ func TaskDetailPanel(listID string, task tasks.Task) templ.Component {
 		var templ_7745c5c3_Var39 string
 		templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs("/api/tasklists/" + listID + "/tasks/" + task.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 208, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 209, Col: 65}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 		if templ_7745c5c3_Err != nil {
@@ -659,7 +660,7 @@ func TaskDetailPanel(listID string, task tasks.Task) templ.Component {
 		var templ_7745c5c3_Var40 string
 		templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs("#task-" + task.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 209, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_item.templ`, Line: 210, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
 		if templ_7745c5c3_Err != nil {
@@ -678,10 +679,12 @@ func taskVals(task tasks.Task) string {
 	if task.Completed {
 		completed = "false"
 	}
+	vals := map[string]string{"completed": completed}
 	if task.ListTitle != "" {
-		return `{"completed": "` + completed + `", "listTitle": "` + task.ListTitle + `"}`
+		vals["listTitle"] = task.ListTitle
 	}
-	return `{"completed": "` + completed + `"}`
+	b, _ := json.Marshal(vals)
+	return string(b)
 }
 
 func listTitleQS(listTitle string) string {
@@ -756,10 +759,12 @@ func isOverdue(due string) bool {
 }
 
 func rescheduleVals(due string, listTitle string) string {
+	vals := map[string]string{"due": due}
 	if listTitle != "" {
-		return `{"due": "` + due + `", "listTitle": "` + listTitle + `"}`
+		vals["listTitle"] = listTitle
 	}
-	return `{"due": "` + due + `"}`
+	b, _ := json.Marshal(vals)
+	return string(b)
 }
 
 var _ = templruntime.GeneratedTemplate

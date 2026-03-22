@@ -1,6 +1,7 @@
 package templates
 
 import (
+	"encoding/json"
 	"net/url"
 	"time"
 	"github.com/alex/google-tasks/internal/tasks"
@@ -229,10 +230,12 @@ func taskVals(task tasks.Task) string {
 	if task.Completed {
 		completed = "false"
 	}
+	vals := map[string]string{"completed": completed}
 	if task.ListTitle != "" {
-		return `{"completed": "` + completed + `", "listTitle": "` + task.ListTitle + `"}`
+		vals["listTitle"] = task.ListTitle
 	}
-	return `{"completed": "` + completed + `"}`
+	b, _ := json.Marshal(vals)
+	return string(b)
 }
 
 func listTitleQS(listTitle string) string {
@@ -301,8 +304,10 @@ func isOverdue(due string) bool {
 }
 
 func rescheduleVals(due string, listTitle string) string {
+	vals := map[string]string{"due": due}
 	if listTitle != "" {
-		return `{"due": "` + due + `", "listTitle": "` + listTitle + `"}`
+		vals["listTitle"] = listTitle
 	}
-	return `{"due": "` + due + `"}`
+	b, _ := json.Marshal(vals)
+	return string(b)
 }

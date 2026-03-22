@@ -127,7 +127,6 @@ func (c *Client) UpdateTask(listID, taskID, title, notes, due string) (*Task, er
 // PatchDueDate updates only the due date of a task.
 func (c *Client) PatchDueDate(listID, taskID, due string) (*Task, error) {
 	gt := &gtasks.Task{
-		Id:  taskID,
 		Due: due + "T00:00:00.000Z",
 	}
 	updated, err := c.svc.Tasks.Patch(listID, taskID, gt).Do()

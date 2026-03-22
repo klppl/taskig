@@ -87,7 +87,7 @@ templ sortableInit() {
 					const taskId = item.dataset.taskId;
 					const listId = list.dataset.listId;
 					const prev = item.previousElementSibling;
-					const previousId = prev ? prev.dataset.taskId : '';
+					const previousId = (prev && prev.dataset.taskId) || '';
 					fetch('/api/tasklists/' + listId + '/tasks/' + taskId + '/move', {
 						method: 'POST',
 						headers: {
@@ -95,7 +95,7 @@ templ sortableInit() {
 							'X-Requested-With': 'XMLHttpRequest'
 						},
 						body: 'previous=' + encodeURIComponent(previousId)
-					});
+					}).catch(function() { location.reload(); });
 				}
 			});
 		})();

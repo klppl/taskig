@@ -295,20 +295,19 @@ func renderError(c echo.Context, msg string) error {
 		`<div class="rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">`+msg+`</div>`)
 }
 
-// renderOOB writes an out-of-band HTMX swap for the given element ID.
+// renderOOB writes an out-of-band HTMX innerHTML swap for the given element ID.
 func renderOOB(ctx context.Context, w io.Writer, id string, comp templ.Component) error {
-	_, _ = w.Write([]byte(`<div id="` + id + `" hx-swap-oob="innerHTML:#` + id + `">`))
-	if err := comp.Render(ctx, w); err != nil {
-		return err
-	}
-	_, _ = w.Write([]byte(`</div>`))
-	return nil
+	return renderOOBSwap(ctx, w, "innerHTML", id, comp)
 }
 
-// renderOOBOuter writes an out-of-band outerHTML swap. Use this when the
-// component renders its own wrapper element with the target ID (e.g. TaskItem).
+// renderOOBOuter writes an out-of-band outerHTML swap. Use when the component
+// renders its own wrapper element with the target ID (e.g. TaskItem).
 func renderOOBOuter(ctx context.Context, w io.Writer, id string, comp templ.Component) error {
-	_, _ = w.Write([]byte(`<div hx-swap-oob="outerHTML:#` + id + `">`))
+	return renderOOBSwap(ctx, w, "outerHTML", id, comp)
+}
+
+func renderOOBSwap(ctx context.Context, w io.Writer, swap, id string, comp templ.Component) error {
+	_, _ = w.Write([]byte(`<div hx-swap-oob="` + swap + `:#` + id + `">`))
 	if err := comp.Render(ctx, w); err != nil {
 		return err
 	}
