@@ -153,6 +153,29 @@ templ TaskDetailPanel(listID string, task tasks.Task) {
 						value={ task.Due }
 						class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:focus:border-blue-400"
 					/>
+					<div class="mt-2 flex gap-1">
+						<button
+							type="button"
+							onclick={ setDueAndSubmit(todayDate()) }
+							class="rounded px-2 py-1 text-xs text-gray-500 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+						>
+							Today
+						</button>
+						<button
+							type="button"
+							onclick={ setDueAndSubmit(tomorrowDate()) }
+							class="rounded px-2 py-1 text-xs text-gray-500 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+						>
+							Tmrw
+						</button>
+						<button
+							type="button"
+							onclick={ setDueAndSubmit(nextMondayDate()) }
+							class="rounded px-2 py-1 text-xs text-gray-500 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+						>
+							Mon
+						</button>
+					</div>
 				</div>
 				<!-- Status -->
 				<div class="flex items-center gap-2">
@@ -234,6 +257,12 @@ func dueDateClass(due string, completed bool) string {
 		return "text-amber-500 dark:text-amber-400"
 	}
 	return "text-gray-400 dark:text-gray-500"
+}
+
+script setDueAndSubmit(due string) {
+	const form = document.currentScript.closest("form");
+	form.querySelector("[name=due]").value = due;
+	form.requestSubmit();
 }
 
 func todayDate() string {
