@@ -145,7 +145,7 @@ func (h *Handlers) HandleUpdateTask(c echo.Context) error {
 	}
 
 	// OOB update the task item in the list
-	return renderOOB(ctx, w, "task-"+taskID, ViewTaskItem(listID, *task, false))
+	return renderOOBOuter(ctx, w, "task-"+taskID, ViewTaskItem(listID, *task, false))
 }
 
 func (h *Handlers) HandleGetDetail(c echo.Context) error {
@@ -283,6 +283,17 @@ func renderError(c echo.Context, msg string) error {
 // renderOOB writes an out-of-band HTMX swap for the given element ID.
 func renderOOB(ctx context.Context, w io.Writer, id string, comp templ.Component) error {
 	_, _ = w.Write([]byte(`<div id="` + id + `" hx-swap-oob="innerHTML:#` + id + `">`))
+	if err := comp.Render(ctx, w); err != nil {
+		return err
+	}
+	_, _ = w.Write([]byte(`</div>`))
+	return nil
+}
+
+// renderOOBOuter writes an out-of-band outerHTML swap. Use this when the
+// component renders its own wrapper element with the target ID (e.g. TaskItem).
+func renderOOBOuter(ctx context.Context, w io.Writer, id string, comp templ.Component) error {
+	_, _ = w.Write([]byte(`<div hx-swap-oob="outerHTML:#` + id + `">`))
 	if err := comp.Render(ctx, w); err != nil {
 		return err
 	}
