@@ -240,6 +240,21 @@ func (h *Handlers) HandleRescheduleTask(c echo.Context) error {
 	return renderOOB(ctx, w, "detail-panel", ViewTaskDetailEmpty())
 }
 
+func (h *Handlers) HandleMoveTask(c echo.Context) error {
+	svc := auth.GetTasksClient(c)
+	client := NewClient(svc)
+	listID := c.Param("listId")
+	taskID := c.Param("taskId")
+	previousID := c.FormValue("previous")
+
+	_, err := client.MoveTask(listID, taskID, previousID)
+	if err != nil {
+		return renderError(c, "Failed to move task")
+	}
+
+	return c.NoContent(http.StatusNoContent)
+}
+
 func (h *Handlers) HandleToggleHideCompleted(c echo.Context) error {
 	svc := auth.GetTasksClient(c)
 	client := NewClient(svc)

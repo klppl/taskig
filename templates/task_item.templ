@@ -9,11 +9,25 @@ import (
 templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 	<div
 		id={ "task-" + task.ID }
+		data-task-id={ task.ID }
 		class={
 			"group flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-gray-50 dark:hover:bg-gray-800/50",
 			templ.KV("opacity-50", task.Completed),
 		}
 	>
+		<!-- Drag handle -->
+		if !inTodayView {
+			<span class="drag-handle cursor-grab text-gray-300 opacity-0 transition group-hover:opacity-100 active:cursor-grabbing dark:text-gray-600">
+				<svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+					<circle cx="9" cy="6" r="1.5"></circle>
+					<circle cx="15" cy="6" r="1.5"></circle>
+					<circle cx="9" cy="12" r="1.5"></circle>
+					<circle cx="15" cy="12" r="1.5"></circle>
+					<circle cx="9" cy="18" r="1.5"></circle>
+					<circle cx="15" cy="18" r="1.5"></circle>
+				</svg>
+			</span>
+		}
 		<!-- Complete checkbox -->
 		<input
 			type="checkbox"

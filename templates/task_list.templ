@@ -47,11 +47,12 @@ templ TaskListContent(listID string, listTitle string, taskItems []tasks.Task, h
 			</div>
 		</form>
 		<!-- Task list -->
-		<div id="task-list" class="space-y-0.5">
+		<div id="task-list" data-list-id={ listID } class="space-y-0.5">
 			for _, task := range taskItems {
 				@TaskItem(listID, task, false)
 			}
 		</div>
+		@sortableInit()
 	</div>
 }
 
@@ -68,6 +69,37 @@ templ TodayContent(taskItems []tasks.Task) {
 			</div>
 		}
 	</div>
+}
+
+templ sortableInit() {
+	<script>
+		(function() {
+			const list = document.getElementById('task-list');
+			if (!list || !list.dataset.listId) return;
+			if (list._sortable) list._sortable.destroy();
+			list._sortable = Sortable.create(list, {
+				animation: 150,
+				ghostClass: 'opacity-30',
+				handle: '.drag-handle',
+				onEnd: function(evt) {
+					if (evt.oldIndex === evt.newIndex) return;
+					const item = evt.item;
+					const taskId = item.dataset.taskId;
+					const listId = list.dataset.listId;
+					const prev = item.previousElementSibling;
+					const previousId = prev ? prev.dataset.taskId : '';
+					fetch('/api/tasklists/' + listId + '/tasks/' + taskId + '/move', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/x-www-form-urlencoded',
+							'X-Requested-With': 'XMLHttpRequest'
+						},
+						body: 'previous=' + encodeURIComponent(previousId)
+					});
+				}
+			});
+		})();
+	</script>
 }
 
 func hideCompletedVals(listID, listTitle string) string {

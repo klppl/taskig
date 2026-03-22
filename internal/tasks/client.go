@@ -161,6 +161,22 @@ func (c *Client) CompleteTask(listID, taskID string, completed bool) (*Task, err
 	return &t, nil
 }
 
+// MoveTask repositions a task within a list. previousID is the task ID to
+// place this task after; empty string moves it to the top.
+func (c *Client) MoveTask(listID, taskID, previousID string) (*Task, error) {
+	call := c.svc.Tasks.Move(listID, taskID)
+	if previousID != "" {
+		call = call.Previous(previousID)
+	}
+	moved, err := call.Do()
+	if err != nil {
+		return nil, fmt.Errorf("move task: %w", err)
+	}
+	t := ToTask(moved)
+	t.ListID = listID
+	return &t, nil
+}
+
 // DeleteTask deletes a task from the given list.
 func (c *Client) DeleteTask(listID, taskID string) error {
 	if err := c.svc.Tasks.Delete(listID, taskID).Do(); err != nil {
