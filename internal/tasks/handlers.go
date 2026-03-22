@@ -183,6 +183,8 @@ func (h *Handlers) HandleGetDetail(c echo.Context) error {
 		return renderError(c, "Failed to load task")
 	}
 
+	subtasks, _ := client.ListSubtasks(listID, taskID)
+	task.Children = subtasks
 	task.ListTitle = c.QueryParam("listTitle")
 	return ViewTaskDetailPanel(listID, *task).Render(c.Request().Context(), c.Response())
 }

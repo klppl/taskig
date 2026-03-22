@@ -89,6 +89,21 @@ func (c *Client) ListTodayTasks(today string) ([]Task, error) {
 	return result, nil
 }
 
+// ListSubtasks returns direct children of a task.
+func (c *Client) ListSubtasks(listID, parentID string) ([]Task, error) {
+	all, err := c.ListTasks(listID, true)
+	if err != nil {
+		return nil, err
+	}
+	var children []Task
+	for _, t := range all {
+		if t.Parent == parentID {
+			children = append(children, t)
+		}
+	}
+	return children, nil
+}
+
 // CreateTask creates a new task in the given list.
 func (c *Client) CreateTask(listID, title, notes string) (*Task, error) {
 	gt := &gtasks.Task{

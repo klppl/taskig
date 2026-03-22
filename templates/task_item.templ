@@ -269,6 +269,45 @@ templ TaskDetailPanel(listID string, task tasks.Task) {
 					}
 				</div>
 			</div>
+			<!-- Subtasks -->
+			if len(task.Children) > 0 {
+				<div>
+					<label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+						Subtasks ({ fmt.Sprintf("%d", len(task.Children)) })
+					</label>
+					<div class="space-y-1 rounded-md border border-gray-200 p-2 dark:border-gray-700">
+						for _, child := range task.Children {
+							<div class="flex items-center gap-2 rounded px-2 py-1 text-sm hover:bg-gray-50 dark:hover:bg-gray-800/50">
+								<input
+									type="checkbox"
+									checked?={ child.Completed }
+									hx-patch={ "/api/tasklists/" + listID + "/tasks/" + child.ID }
+									hx-vals={ taskVals(child) }
+									hx-target={ "#task-" + child.ID }
+									hx-swap="outerHTML"
+									class="h-3.5 w-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600"
+								/>
+								<span
+									hx-get={ "/api/tasklists/" + listID + "/tasks/" + child.ID + "/detail" + listTitleQS(child.ListTitle) }
+									hx-target="#detail-panel"
+									hx-swap="innerHTML"
+									class={
+										"flex-1 cursor-pointer text-sm",
+										templ.KV("line-through text-gray-400", child.Completed),
+									}
+								>
+									{ child.Title }
+								</span>
+								if child.Due != "" {
+									<span class={ "whitespace-nowrap text-xs", dueDateClass(child.Due, child.Completed) }>
+										{ formatDue(child.Due) }
+									</span>
+								}
+							</div>
+						}
+					</div>
+				</div>
+			}
 			<!-- Add subtask -->
 			<div>
 				<label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">Add subtask</label>
