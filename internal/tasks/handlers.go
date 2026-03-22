@@ -205,6 +205,41 @@ func (h *Handlers) HandleToday(c echo.Context) error {
 	return ViewTasklistSidebarOOB(lists, "_today").Render(ctx, w)
 }
 
+func (h *Handlers) HandleRescheduleTask(c echo.Context) error {
+	svc := auth.GetTasksClient(c)
+	client := NewClient(svc)
+	listID := c.Param("listId")
+	taskID := c.Param("taskId")
+	due := c.FormValue("due")
+	listTitle := c.FormValue("listTitle")
+
+	if due == "" {
+		return c.String(http.StatusBadRequest, "Due date is required")
+	}
+
+	task, err := client.PatchDueDate(listID, taskID, due)
+	if err != nil {
+		return renderError(c, "Failed to reschedule task")
+	}
+
+	task.ListTitle = listTitle
+
+	ctx := c.Request().Context()
+	w := c.Response()
+
+	today := time.Now().Format("2006-01-02")
+	if due <= today {
+		// Task still belongs in Today view — return updated item
+		if err := ViewTaskItem(listID, *task, true).Render(ctx, w); err != nil {
+			return err
+		}
+	}
+	// If due > today, primary response is empty (task removed from DOM)
+
+	// OOB: clear detail panel
+	return renderOOB(ctx, w, "detail-panel", ViewTaskDetailEmpty())
+}
+
 func (h *Handlers) HandleToggleHideCompleted(c echo.Context) error {
 	svc := auth.GetTasksClient(c)
 	client := NewClient(svc)
