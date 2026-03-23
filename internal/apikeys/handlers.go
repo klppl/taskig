@@ -130,6 +130,81 @@ func (h *Handlers) HandleListLists(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]any{"lists": resp})
 }
 
+type moveTaskRequest struct {
+	DestListID   string `json:"dest_list_id"`
+	DestListName string `json:"dest_list_name"`
+}
+
+// HandleMoveTask handles POST /api/v1/tasks/:id/move
+func (h *Handlers) HandleMoveTask(c echo.Context) error {
+	taskID := c.Param("id")
+	var req moveTaskRequest
+	if err := c.Bind(&req); err != nil {
+		return jsonError(c, http.StatusBadRequest, "invalid JSON body")
+	}
+
+	if req.DestListID == "" && req.DestListName == "" {
+		return jsonError(c, http.StatusBadRequest, "dest_list_id or dest_list_name is required")
+	}
+
+	svc := GetTasksClient(c)
+	email := GetEmail(c)
+	client := tasks.NewClient(svc, h.cache, email)
+
+	lists, err := client.ListTaskLists()
+	if err != nil {
+		return jsonError(c, http.StatusInternalServerError, "failed to fetch task lists")
+	}
+
+	// Resolve destination list
+	dstListID := req.DestListID
+	if dstListID == "" {
+		for _, l := range lists {
+			if strings.EqualFold(l.Title, req.DestListName) {
+				dstListID = l.ID
+				break
+			}
+		}
+		if dstListID == "" {
+			return jsonError(c, http.StatusNotFound, "destination list not found: "+req.DestListName)
+		}
+	}
+
+	// We also need to find the source list by searching all lists for the task.
+	// The caller must provide it, or we search.
+	srcListID := c.QueryParam("list_id")
+	if srcListID == "" {
+		// Search all lists for the task
+		for _, l := range lists {
+			if t, err := client.GetTask(l.ID, taskID); err == nil && t != nil {
+				srcListID = l.ID
+				break
+			}
+		}
+		if srcListID == "" {
+			return jsonError(c, http.StatusNotFound, "task not found in any list")
+		}
+	}
+
+	if srcListID == dstListID {
+		return jsonError(c, http.StatusBadRequest, "task is already in the destination list")
+	}
+
+	task, err := client.MoveTaskToList(srcListID, taskID, dstListID)
+	if err != nil {
+		return jsonError(c, http.StatusInternalServerError, "failed to move task")
+	}
+
+	return c.JSON(http.StatusOK, taskResponse{
+		ID:        task.ID,
+		Title:     task.Title,
+		Notes:     task.Notes,
+		Due:       task.Due,
+		Completed: task.Completed,
+		ListID:    dstListID,
+	})
+}
+
 // HandleCreateKey handles POST /api/v1/keys (session-authed, not API key)
 func (h *Handlers) HandleCreateKey(c echo.Context) error {
 	email := auth.GetEmail(c)

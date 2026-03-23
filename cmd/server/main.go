@@ -120,6 +120,7 @@ func main() {
 	// External JSON API (API key auth)
 	v1 := e.Group("/api/v1", apiKeyMiddleware.RequireAPIKey)
 	v1.POST("/tasks", apiV1Handlers.HandleCreateTask)
+	v1.POST("/tasks/:id/move", apiV1Handlers.HandleMoveTask)
 	v1.GET("/lists", apiV1Handlers.HandleListLists)
 
 	// API key management (session auth, no XHR requirement)

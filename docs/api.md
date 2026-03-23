@@ -94,6 +94,51 @@ If both `list_id` and `list_name` are provided, `list_id` takes precedence.
 }
 ```
 
+### POST `/api/v1/tasks/:id/move` — Move Task to Another List
+
+Move a task (and its subtasks) from one list to another.
+
+**Request:**
+
+```bash
+curl -X POST http://localhost:8080/api/v1/tasks/dGFzay0x.../move \
+  -H "Authorization: Bearer tsk_<your-key>" \
+  -H "Content-Type: application/json" \
+  -d '{"dest_list_name": "Shopping"}'
+```
+
+**Body fields:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `dest_list_id` | string | One of `dest_list_id` or `dest_list_name` | Destination list ID |
+| `dest_list_name` | string | One of `dest_list_id` or `dest_list_name` | Destination list name (case-insensitive) |
+
+**Query parameters:**
+
+| Param | Type | Required | Description |
+|-------|------|----------|-------------|
+| `list_id` | string | No | Source list ID. If omitted, all lists are searched for the task. |
+
+If both `dest_list_id` and `dest_list_name` are provided, `dest_list_id` takes precedence.
+
+Subtasks are moved along with the parent task.
+
+**Response:** `200 OK`
+
+```json
+{
+  "id": "newTaskId...",
+  "title": "Buy groceries",
+  "notes": "",
+  "due": "2026-03-25",
+  "completed": false,
+  "list_id": "destListId..."
+}
+```
+
+Note: The task gets a new ID in the destination list since Google Tasks doesn't support cross-list moves natively.
+
 ### GET `/api/v1/lists` — List Task Lists
 
 Discover your task lists and their IDs.
@@ -129,9 +174,9 @@ All errors return JSON:
 
 | Code | Meaning |
 |------|---------|
-| 400 | Bad request — missing `title`, or neither `list_id` nor `list_name` provided |
+| 400 | Bad request — missing required fields, or task already in destination list |
 | 401 | Unauthorized — missing/invalid API key, or no active web session for this user |
-| 404 | Not found — `list_name` doesn't match any existing list |
+| 404 | Not found — list or task not found |
 | 500 | Server error — Google Tasks API failure |
 
 ---
