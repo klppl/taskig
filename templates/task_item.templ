@@ -86,24 +86,23 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 					</span>
 				}
 				if task.Due != "" {
-					<div class={ templ.KV("group/date relative", inTodayView) }>
-						<span class={ "meta-text flex cursor-default items-center gap-1 whitespace-nowrap rounded-md px-1.5 py-0.5 text-[11px] font-medium", dueDateBadgeClass(task.Due, task.Completed) }>
+					<div class="flex items-center">
+						<span class={ "meta-text flex items-center gap-1 whitespace-nowrap rounded-md px-1.5 py-0.5 text-[11px] font-medium", dueDateBadgeClass(task.Due, task.Completed) }>
 							<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
 							</svg>
 							{ formatDue(task.Due) }
 						</span>
 						if inTodayView {
-							<!-- Invisible bridge so mouse can travel from badge to dropdown -->
-							<div class="invisible absolute right-0 top-full z-10 h-2 w-full group-hover/date:visible"></div>
-							<div class="invisible absolute right-0 top-full z-10 mt-2 flex items-center gap-0.5 rounded-lg border border-gray-200 bg-white px-1.5 py-1 shadow-lg group-hover/date:visible dark:border-gray-700 dark:bg-gray-900" onclick="event.stopPropagation()">
+							<span class="mx-1.5 h-3.5 w-px bg-gray-200 dark:bg-gray-700"></span>
+							<div class="flex items-center gap-0.5" onclick="event.stopPropagation()">
 								if isOverdue(task.Due) {
 									<button
 										hx-post={ "/api/tasklists/" + listID + "/tasks/" + task.ID + "/reschedule" }
 										hx-vals={ rescheduleVals(todayDate(), task.ListTitle) }
 										hx-target={ "#task-" + task.ID }
 										hx-swap="outerHTML swap:300ms"
-										class="whitespace-nowrap rounded-md px-2 py-1 text-xs font-medium text-blue-600 transition hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
+										class="whitespace-nowrap rounded-md px-1.5 py-0.5 text-[11px] font-medium text-blue-600 transition hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
 									>
 										{ i18n.T(ctx, "today_btn") }
 									</button>
@@ -113,7 +112,7 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 									hx-vals={ rescheduleVals(tomorrowDate(), task.ListTitle) }
 									hx-target={ "#task-" + task.ID }
 									hx-swap="outerHTML swap:300ms"
-									class="whitespace-nowrap rounded-md px-2 py-1 text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+									class="whitespace-nowrap rounded-md px-1.5 py-0.5 text-[11px] font-medium text-gray-500 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
 								>
 									{ i18n.T(ctx, "tomorrow_btn") }
 								</button>
@@ -122,7 +121,7 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 									hx-vals={ rescheduleVals(nextMondayDate(), task.ListTitle) }
 									hx-target={ "#task-" + task.ID }
 									hx-swap="outerHTML swap:300ms"
-									class="whitespace-nowrap rounded-md px-2 py-1 text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+									class="whitespace-nowrap rounded-md px-1.5 py-0.5 text-[11px] font-medium text-gray-500 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
 								>
 									{ i18n.T(ctx, "monday_btn") }
 								</button>
