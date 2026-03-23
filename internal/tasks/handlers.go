@@ -409,6 +409,7 @@ func (h *Handlers) HandleRescheduleTask(c echo.Context) error {
 	}
 
 	task.ListTitle = listTitle
+	task.ListColor = h.colors.Get(auth.GetEmail(c), listID)
 
 	ctx := c.Request().Context()
 	w := c.Response()
