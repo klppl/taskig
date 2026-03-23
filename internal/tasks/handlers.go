@@ -196,6 +196,8 @@ func (h *Handlers) HandleUpdateTask(c echo.Context) error {
 	ctx := c.Request().Context()
 	w := c.Response()
 
+	inToday := c.FormValue("inToday") == "1"
+
 	// Completion toggle (from checkbox in task list)
 	if completed := c.FormValue("completed"); completed != "" {
 		task, err := client.CompleteTask(listID, taskID, completed == "true")
@@ -203,7 +205,10 @@ func (h *Handlers) HandleUpdateTask(c echo.Context) error {
 			return renderError(c, "Failed to update task")
 		}
 		task.ListTitle = listTitle
-		return ViewTaskItem(listID, *task, false).Render(ctx, w)
+		if inToday {
+			task.ListColor = h.colors.Get(auth.GetEmail(c), listID)
+		}
+		return ViewTaskItem(listID, *task, inToday).Render(ctx, w)
 	}
 
 	// Title/notes/due edit (from detail panel)
@@ -228,7 +233,10 @@ func (h *Handlers) HandleUpdateTask(c echo.Context) error {
 	}
 
 	// OOB update the task item in the list
-	return renderOOBOuter(ctx, w, "task-"+taskID, ViewTaskItem(listID, *task, false))
+	if inToday {
+		task.ListColor = h.colors.Get(auth.GetEmail(c), listID)
+	}
+	return renderOOBOuter(ctx, w, "task-"+taskID, ViewTaskItem(listID, *task, inToday))
 }
 
 func (h *Handlers) HandleGetDetail(c echo.Context) error {

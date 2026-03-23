@@ -61,7 +61,7 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 				type="checkbox"
 				checked?={ task.Completed }
 				hx-patch={ "/api/tasklists/" + listID + "/tasks/" + task.ID }
-				hx-vals={ taskVals(task) }
+				hx-vals={ taskVals(task, inTodayView) }
 				hx-target={ "#task-" + task.ID }
 				hx-swap="outerHTML"
 				class="h-[18px] w-[18px] cursor-pointer rounded-full border-2 border-gray-300 text-blue-600 transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:border-gray-600 dark:focus:ring-offset-gray-900"
@@ -226,6 +226,7 @@ templ TaskDetailPanel(listID string, task tasks.Task, taskLists []tasks.TaskList
 		>
 			if task.ListTitle != "" {
 				<input type="hidden" name="listTitle" value={ task.ListTitle }/>
+				<input type="hidden" name="inToday" value="1"/>
 			}
 			<div class="detail-fields space-y-4">
 				<!-- Title -->
@@ -313,7 +314,7 @@ templ TaskDetailPanel(listID string, task tasks.Task, taskLists []tasks.TaskList
 									type="checkbox"
 									checked?={ child.Completed }
 									hx-patch={ "/api/tasklists/" + listID + "/tasks/" + child.ID }
-									hx-vals={ taskVals(child) }
+									hx-vals={ taskVals(child, false) }
 									hx-target={ "#task-" + child.ID }
 									hx-swap="outerHTML"
 									class="h-3.5 w-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600"
@@ -386,7 +387,7 @@ templ TaskDetailPanel(listID string, task tasks.Task, taskLists []tasks.TaskList
 	</div>
 }
 
-func taskVals(task tasks.Task) string {
+func taskVals(task tasks.Task, inTodayView bool) string {
 	completed := "true"
 	if task.Completed {
 		completed = "false"
@@ -394,6 +395,9 @@ func taskVals(task tasks.Task) string {
 	vals := map[string]string{"completed": completed}
 	if task.ListTitle != "" {
 		vals["listTitle"] = task.ListTitle
+	}
+	if inTodayView {
+		vals["inToday"] = "1"
 	}
 	b, _ := json.Marshal(vals)
 	return string(b)
@@ -561,7 +565,7 @@ func truncateURL(u string) string {
 }
 
 func rescheduleVals(due string, listTitle string) string {
-	vals := map[string]string{"due": due}
+	vals := map[string]string{"due": due, "inToday": "1"}
 	if listTitle != "" {
 		vals["listTitle"] = listTitle
 	}
