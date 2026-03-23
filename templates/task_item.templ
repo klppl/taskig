@@ -1,9 +1,14 @@
 package templates
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"html"
+	"io"
 	"net/url"
+	"regexp"
+	"strings"
 	"time"
 	"github.com/alex/google-tasks/internal/tasks"
 )
@@ -64,7 +69,7 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 				templ.KV("line-through", task.Completed),
 			}
 		>
-			{ task.Title }
+			@linkifyText(task.Title)
 		</span>
 		<!-- List name (shown in cross-list views) -->
 		if task.ListTitle != "" {
@@ -297,7 +302,7 @@ templ TaskDetailPanel(listID string, task tasks.Task) {
 										templ.KV("line-through text-gray-400", child.Completed),
 									}
 								>
-									{ child.Title }
+									@linkifyText(child.Title)
 								</span>
 								if child.Due != "" {
 									<span class={ "whitespace-nowrap text-xs", dueDateClass(child.Due, child.Completed) }>
@@ -462,6 +467,44 @@ func nextMondayDate() string {
 
 func isOverdue(due string) bool {
 	return due != "" && due < todayDate()
+}
+
+var urlPattern = regexp.MustCompile(`https?://[^\s<>"` + "`" + `\x00-\x1f]*`)
+
+func linkifyText(text string) templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) error {
+		matches := urlPattern.FindAllStringIndex(text, -1)
+		if len(matches) == 0 {
+			_, err := io.WriteString(w, html.EscapeString(text))
+			return err
+		}
+		var b strings.Builder
+		prev := 0
+		for _, loc := range matches {
+			b.WriteString(html.EscapeString(text[prev:loc[0]]))
+			u := text[loc[0]:loc[1]]
+			b.WriteString(`<a href="`)
+			b.WriteString(html.EscapeString(u))
+			b.WriteString(`" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" class="text-blue-600 hover:underline dark:text-blue-400">`)
+			b.WriteString(html.EscapeString(truncateURL(u)))
+			b.WriteString(`</a>`)
+			prev = loc[1]
+		}
+		b.WriteString(html.EscapeString(text[prev:]))
+		_, err := io.WriteString(w, b.String())
+		return err
+	})
+}
+
+func truncateURL(u string) string {
+	// Show domain + path, truncate if too long
+	s := strings.TrimPrefix(u, "https://")
+	s = strings.TrimPrefix(s, "http://")
+	s = strings.TrimPrefix(s, "www.")
+	if len(s) > 50 {
+		return s[:47] + "..."
+	}
+	return s
 }
 
 func rescheduleVals(due string, listTitle string) string {

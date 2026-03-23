@@ -106,27 +106,26 @@ func (c *Client) ListSubtasks(listID, parentID string) ([]Task, error) {
 
 // CreateTask creates a new task in the given list.
 func (c *Client) CreateTask(listID, title, notes string) (*Task, error) {
-	gt := &gtasks.Task{
-		Title: title,
-		Notes: notes,
-	}
-	created, err := c.svc.Tasks.Insert(listID, gt).Do()
-	if err != nil {
-		return nil, fmt.Errorf("create task: %w", err)
-	}
-	t := ToTask(created)
-	t.ListID = listID
-	return &t, nil
+	return c.insertTask(listID, title, notes, "")
 }
 
 // CreateSubtask creates a new task as a child of the given parent task.
 func (c *Client) CreateSubtask(listID, parentID, title string) (*Task, error) {
+	return c.insertTask(listID, title, "", parentID)
+}
+
+func (c *Client) insertTask(listID, title, notes, parentID string) (*Task, error) {
 	gt := &gtasks.Task{
 		Title: title,
+		Notes: notes,
 	}
-	created, err := c.svc.Tasks.Insert(listID, gt).Parent(parentID).Do()
+	call := c.svc.Tasks.Insert(listID, gt)
+	if parentID != "" {
+		call = call.Parent(parentID)
+	}
+	created, err := call.Do()
 	if err != nil {
-		return nil, fmt.Errorf("create subtask: %w", err)
+		return nil, fmt.Errorf("create task: %w", err)
 	}
 	t := ToTask(created)
 	t.ListID = listID
