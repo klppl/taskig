@@ -28,8 +28,8 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 			templ.KV("opacity-40", task.Completed),
 		}
 	>
-		<!-- Drag handle -->
 		if !inTodayView {
+			<!-- Drag handle -->
 			<span onclick="event.stopPropagation()" class="drag-handle -ml-1 cursor-grab text-gray-300 opacity-0 transition group-hover:opacity-100 active:cursor-grabbing dark:text-gray-600">
 				<svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
 					<circle cx="9" cy="7" r="1.5"></circle>
@@ -40,20 +40,20 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 					<circle cx="15" cy="17" r="1.5"></circle>
 				</svg>
 			</span>
-		}
-		if len(task.Children) > 0 {
-			<button
-				type="button"
-				onclick={ toggleChildrenStop(task.ID) }
-				class="flex h-4 w-4 items-center justify-center text-gray-400 transition hover:text-gray-600 dark:hover:text-gray-300"
-				data-toggle-id={ task.ID }
-			>
-				<svg class="h-3 w-3 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-				</svg>
-			</button>
-		} else if task.Parent == "" {
-			<span class="w-4"></span>
+			if len(task.Children) > 0 {
+				<button
+					type="button"
+					onclick={ toggleChildrenStop(task.ID) }
+					class="flex h-4 w-4 items-center justify-center text-gray-400 transition hover:text-gray-600 dark:hover:text-gray-300"
+					data-toggle-id={ task.ID }
+				>
+					<svg class="h-3 w-3 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+					</svg>
+				</button>
+			} else if task.Parent == "" {
+				<span class="w-4"></span>
+			}
 		}
 		<!-- Checkbox -->
 		<span class="flex-shrink-0" onclick="event.stopPropagation()">
