@@ -24,13 +24,13 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 		hx-swap="innerHTML"
 		hx-on:click="document.querySelectorAll('[data-task-selected]').forEach(el => { el.removeAttribute('data-task-selected'); el.classList.remove('bg-blue-50', 'dark:bg-blue-900/20'); }); this.setAttribute('data-task-selected', ''); this.classList.add('bg-blue-50', 'dark:bg-blue-900/20');"
 		class={
-			"task-item group flex cursor-pointer items-center gap-3 border-b border-gray-100 px-3 py-2.5 transition-colors hover:bg-gray-50 dark:border-gray-800/50 dark:hover:bg-gray-800/30",
+			"task-item group flex cursor-pointer items-center gap-2 border-b border-gray-100 px-3 py-2.5 transition-colors hover:bg-gray-50 dark:border-gray-800/50 dark:hover:bg-gray-800/30",
 			templ.KV("opacity-40", task.Completed),
 		}
 	>
 		if !inTodayView {
 			<!-- Drag handle -->
-			<span onclick="event.stopPropagation()" class="drag-handle -ml-1 cursor-grab text-gray-300 opacity-0 transition group-hover:opacity-100 active:cursor-grabbing dark:text-gray-600">
+			<span onclick="event.stopPropagation()" class="drag-handle cursor-grab text-gray-300 opacity-0 transition group-hover:opacity-100 active:cursor-grabbing dark:text-gray-600">
 				<svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
 					<circle cx="9" cy="7" r="1.5"></circle>
 					<circle cx="15" cy="7" r="1.5"></circle>

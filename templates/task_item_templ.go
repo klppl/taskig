@@ -44,7 +44,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var2 = []any{"task-item group flex cursor-pointer items-center gap-3 border-b border-gray-100 px-3 py-2.5 transition-colors hover:bg-gray-50 dark:border-gray-800/50 dark:hover:bg-gray-800/30",
+		var templ_7745c5c3_Var2 = []any{"task-item group flex cursor-pointer items-center gap-2 border-b border-gray-100 px-3 py-2.5 transition-colors hover:bg-gray-50 dark:border-gray-800/50 dark:hover:bg-gray-800/30",
 			templ.KV("opacity-40", task.Completed),
 		}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
@@ -108,7 +108,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 			return templ_7745c5c3_Err
 		}
 		if !inTodayView {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<!-- Drag handle --> <span onclick=\"event.stopPropagation()\" class=\"drag-handle -ml-1 cursor-grab text-gray-300 opacity-0 transition group-hover:opacity-100 active:cursor-grabbing dark:text-gray-600\"><svg class=\"h-3.5 w-3.5\" fill=\"currentColor\" viewBox=\"0 0 24 24\"><circle cx=\"9\" cy=\"7\" r=\"1.5\"></circle> <circle cx=\"15\" cy=\"7\" r=\"1.5\"></circle> <circle cx=\"9\" cy=\"12\" r=\"1.5\"></circle> <circle cx=\"15\" cy=\"12\" r=\"1.5\"></circle> <circle cx=\"9\" cy=\"17\" r=\"1.5\"></circle> <circle cx=\"15\" cy=\"17\" r=\"1.5\"></circle></svg></span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<!-- Drag handle --> <span onclick=\"event.stopPropagation()\" class=\"drag-handle cursor-grab text-gray-300 opacity-0 transition group-hover:opacity-100 active:cursor-grabbing dark:text-gray-600\"><svg class=\"h-3.5 w-3.5\" fill=\"currentColor\" viewBox=\"0 0 24 24\"><circle cx=\"9\" cy=\"7\" r=\"1.5\"></circle> <circle cx=\"15\" cy=\"7\" r=\"1.5\"></circle> <circle cx=\"9\" cy=\"12\" r=\"1.5\"></circle> <circle cx=\"15\" cy=\"12\" r=\"1.5\"></circle> <circle cx=\"9\" cy=\"17\" r=\"1.5\"></circle> <circle cx=\"15\" cy=\"17\" r=\"1.5\"></circle></svg></span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
