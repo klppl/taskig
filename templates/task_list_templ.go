@@ -89,59 +89,59 @@ func TaskListContent(listID string, listTitle string, taskItems []tasks.Task, hi
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</button></div><!-- Add task form --><form hx-post=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</button></div><!-- Task list --><div id=\"task-list\" data-list-id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
-		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs("/api/tasklists/" + listID + "/tasks")
+		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(listID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 31, Col: 50}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 30, Col: 43}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" hx-target=\"#task-list\" hx-swap=\"afterbegin\" hx-on::after-request=\"this.reset(); this.querySelector('input').blur();\" class=\"group/form mb-5\"><div class=\"flex items-center gap-2 rounded-lg border border-dashed border-gray-300 px-3 py-2 transition-all focus-within:border-solid focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-sm dark:border-gray-700 dark:focus-within:border-blue-400 dark:focus-within:bg-gray-900\"><svg class=\"h-4 w-4 flex-shrink-0 text-gray-400 transition group-focus-within/form:text-blue-500 dark:text-gray-600 dark:group-focus-within/form:text-blue-400\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 4v16m8-8H4\"></path></svg> <input type=\"text\" name=\"title\" placeholder=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" class=\"task-list\"><!-- Inline add task (ghost row) --><form hx-post=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 string
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(ctx, "add_task_placeholder"))
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs("/api/tasklists/" + listID + "/tasks")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 44, Col: 54}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 33, Col: 51}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" required class=\"flex-1 bg-transparent text-sm placeholder-gray-400 outline-none dark:placeholder-gray-500\"> <button type=\"submit\" class=\"hidden rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-blue-700 group-focus-within/form:block dark:bg-blue-500 dark:hover:bg-blue-600\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" hx-target=\"#task-list\" hx-swap=\"afterbegin\" hx-on::after-request=\"this.reset(); this.querySelector('input').blur();\" class=\"group/form\"><div class=\"flex items-center gap-3 border-b border-transparent px-3 py-2.5 transition-all focus-within:border-gray-100 focus-within:bg-white dark:focus-within:border-gray-800/50 dark:focus-within:bg-gray-800/20\"><svg class=\"h-4 w-4 flex-shrink-0 text-gray-300 transition group-focus-within/form:text-blue-500 dark:text-gray-600 dark:group-focus-within/form:text-blue-400\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 4v16m8-8H4\"></path></svg> <input type=\"text\" name=\"title\" placeholder=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var8 string
-		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(ctx, "add"))
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(ctx, "add_task_placeholder"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 52, Col: 25}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 46, Col: 55}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</button></div></form><!-- Task list --><div id=\"task-list\" data-list-id=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" required class=\"flex-1 bg-transparent text-sm placeholder-gray-300 outline-none transition focus:placeholder-gray-400 dark:placeholder-gray-600 dark:focus:placeholder-gray-500\"> <button type=\"submit\" class=\"hidden rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-blue-700 group-focus-within/form:block dark:bg-blue-500 dark:hover:bg-blue-600\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var9 string
-		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(listID)
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(ctx, "add"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 57, Col: 43}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 54, Col: 26}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" class=\"task-list\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</button></div></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

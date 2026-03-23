@@ -26,35 +26,35 @@ templ TaskListContent(listID string, listTitle string, taskItems []tasks.Task, h
 				}
 			</button>
 		</div>
-		<!-- Add task form -->
-		<form
-			hx-post={ "/api/tasklists/" + listID + "/tasks" }
-			hx-target="#task-list"
-			hx-swap="afterbegin"
-			hx-on::after-request="this.reset(); this.querySelector('input').blur();"
-			class="group/form mb-5"
-		>
-			<div class="flex items-center gap-2 rounded-lg border border-dashed border-gray-300 px-3 py-2 transition-all focus-within:border-solid focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-sm dark:border-gray-700 dark:focus-within:border-blue-400 dark:focus-within:bg-gray-900">
-				<svg class="h-4 w-4 flex-shrink-0 text-gray-400 transition group-focus-within/form:text-blue-500 dark:text-gray-600 dark:group-focus-within/form:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-				</svg>
-				<input
-					type="text"
-					name="title"
-					placeholder={ i18n.T(ctx, "add_task_placeholder") }
-					required
-					class="flex-1 bg-transparent text-sm placeholder-gray-400 outline-none dark:placeholder-gray-500"
-				/>
-				<button
-					type="submit"
-					class="hidden rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-blue-700 group-focus-within/form:block dark:bg-blue-500 dark:hover:bg-blue-600"
-				>
-					{ i18n.T(ctx, "add") }
-				</button>
-			</div>
-		</form>
 		<!-- Task list -->
 		<div id="task-list" data-list-id={ listID } class="task-list">
+			<!-- Inline add task (ghost row) -->
+			<form
+				hx-post={ "/api/tasklists/" + listID + "/tasks" }
+				hx-target="#task-list"
+				hx-swap="afterbegin"
+				hx-on::after-request="this.reset(); this.querySelector('input').blur();"
+				class="group/form"
+			>
+				<div class="flex items-center gap-3 border-b border-transparent px-3 py-2.5 transition-all focus-within:border-gray-100 focus-within:bg-white dark:focus-within:border-gray-800/50 dark:focus-within:bg-gray-800/20">
+					<svg class="h-4 w-4 flex-shrink-0 text-gray-300 transition group-focus-within/form:text-blue-500 dark:text-gray-600 dark:group-focus-within/form:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+					</svg>
+					<input
+						type="text"
+						name="title"
+						placeholder={ i18n.T(ctx, "add_task_placeholder") }
+						required
+						class="flex-1 bg-transparent text-sm placeholder-gray-300 outline-none transition focus:placeholder-gray-400 dark:placeholder-gray-600 dark:focus:placeholder-gray-500"
+					/>
+					<button
+						type="submit"
+						class="hidden rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-blue-700 group-focus-within/form:block dark:bg-blue-500 dark:hover:bg-blue-600"
+					>
+						{ i18n.T(ctx, "add") }
+					</button>
+				</div>
+			</form>
 			for _, task := range taskItems {
 				@TaskTree(listID, task, 0)
 			}
