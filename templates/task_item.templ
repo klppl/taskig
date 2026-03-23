@@ -55,24 +55,29 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 				<span class="w-4"></span>
 			}
 		}
-		<!-- Date column (Today view: leftmost, fixed width) -->
+		<!-- Date + reschedule (Today view: leftmost) -->
 		if inTodayView && task.Due != "" {
-			<div class="flex flex-shrink-0 items-center">
+			<div class="group/resched relative flex flex-shrink-0 items-center gap-1.5" onclick="event.stopPropagation()">
 				<span class={ "meta-text flex items-center gap-1 whitespace-nowrap rounded-md px-1.5 py-0.5 text-[11px] font-medium", dueDateBadgeClass(task.Due, task.Completed) }>
 					<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
 					</svg>
 					{ formatDue(task.Due) }
 				</span>
-				<span class="mx-1.5 h-3.5 w-px bg-gray-200 dark:bg-gray-700"></span>
-				<div class="flex items-center gap-1" onclick="event.stopPropagation()">
+				<span class="cursor-default rounded-md px-1.5 py-0.5 text-[11px] font-medium text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-300">
+					{ i18n.T(ctx, "reschedule") }
+				</span>
+				<!-- Reschedule popover -->
+				<div class="invisible absolute left-0 top-full z-10 mt-1 flex items-center gap-1 rounded-lg border border-gray-200 bg-white p-1 shadow-lg group-hover/resched:visible dark:border-gray-700 dark:bg-gray-900">
+					<!-- Bridge element -->
+					<div class="absolute -top-1 left-0 h-2 w-full"></div>
 					if isOverdue(task.Due) {
 						<button
 							hx-post={ "/api/tasklists/" + listID + "/tasks/" + task.ID + "/reschedule" }
 							hx-vals={ rescheduleVals(todayDate(), task.ListTitle) }
 							hx-target={ "#task-" + task.ID }
 							hx-swap="outerHTML"
-							class="whitespace-nowrap rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[11px] font-medium text-blue-600 transition hover:border-blue-300 hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:border-blue-700 dark:hover:bg-blue-900/40"
+							class="whitespace-nowrap rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-600 transition hover:border-blue-300 hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:border-blue-700 dark:hover:bg-blue-900/40"
 						>
 							{ i18n.T(ctx, "today_btn") }
 						</button>
@@ -82,7 +87,7 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 						hx-vals={ rescheduleVals(tomorrowDate(), task.ListTitle) }
 						hx-target={ "#task-" + task.ID }
 						hx-swap="outerHTML"
-						class="whitespace-nowrap rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-600 transition hover:border-amber-300 hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:border-amber-700 dark:hover:bg-amber-900/40"
+						class="whitespace-nowrap rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-600 transition hover:border-amber-300 hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:border-amber-700 dark:hover:bg-amber-900/40"
 					>
 						{ i18n.T(ctx, "tomorrow_btn") }
 					</button>
@@ -91,7 +96,7 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 						hx-vals={ rescheduleVals(nextMondayDate(), task.ListTitle) }
 						hx-target={ "#task-" + task.ID }
 						hx-swap="outerHTML"
-						class="whitespace-nowrap rounded-full border border-purple-200 bg-purple-50 px-2 py-0.5 text-[11px] font-medium text-purple-600 transition hover:border-purple-300 hover:bg-purple-100 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400 dark:hover:border-purple-700 dark:hover:bg-purple-900/40"
+						class="whitespace-nowrap rounded-full border border-purple-200 bg-purple-50 px-2.5 py-1 text-xs font-medium text-purple-600 transition hover:border-purple-300 hover:bg-purple-100 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400 dark:hover:border-purple-700 dark:hover:bg-purple-900/40"
 					>
 						{ i18n.T(ctx, "monday_btn") }
 					</button>
