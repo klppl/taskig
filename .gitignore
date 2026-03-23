@@ -3,3 +3,4 @@ bin/
 .env
 data/
 /docs/superpowers
+/node_modules

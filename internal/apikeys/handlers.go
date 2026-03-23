@@ -5,13 +5,21 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/a-h/templ"
 	"github.com/alex/google-tasks/internal/auth"
 	"github.com/alex/google-tasks/internal/cache"
 	"github.com/alex/google-tasks/internal/tasks"
 	"github.com/labstack/echo/v4"
 )
 
-// Handlers serves the /api/v1/ JSON endpoints.
+// View functions wired at startup to avoid import cycles.
+var (
+	ViewSettingsPage func(email string, keys []APIKey) templ.Component
+	ViewAPIKeyCreated func(rawKey string) templ.Component
+	ViewAPIKeyList   func(keys []APIKey) templ.Component
+)
+
+// Handlers serves the /api/v1/ JSON endpoints and settings pages.
 type Handlers struct {
 	db    *sql.DB
 	cache *cache.Cache
@@ -147,7 +155,7 @@ func (h *Handlers) HandleCreateKey(c echo.Context) error {
 	})
 }
 
-// HandleDeleteKey handles DELETE /api/v1/keys/:id (session-authed)
+// HandleDeleteKey handles DELETE /api/v1/keys/:id (session-authed, JSON API)
 func (h *Handlers) HandleDeleteKey(c echo.Context) error {
 	email := auth.GetEmail(c)
 	if email == "" {
@@ -160,4 +168,49 @@ func (h *Handlers) HandleDeleteKey(c echo.Context) error {
 	}
 
 	return c.NoContent(http.StatusNoContent)
+}
+
+// HandleSettingsPage renders the settings page.
+func (h *Handlers) HandleSettingsPage(c echo.Context) error {
+	email := auth.GetEmail(c)
+	keys, _ := ListKeys(h.db, email)
+	return ViewSettingsPage(email, keys).Render(c.Request().Context(), c.Response())
+}
+
+// HandleSettingsCreateKey creates a key and returns HTML for the settings page.
+func (h *Handlers) HandleSettingsCreateKey(c echo.Context) error {
+	email := auth.GetEmail(c)
+	name := c.FormValue("name")
+
+	rawKey, _, err := GenerateKey(h.db, email, name)
+	if err != nil {
+		return c.HTML(http.StatusInternalServerError,
+			`<div class="rounded-md bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">Failed to generate key</div>`)
+	}
+
+	ctx := c.Request().Context()
+	w := c.Response()
+
+	// Render the "key created" banner
+	if err := ViewAPIKeyCreated(rawKey).Render(ctx, w); err != nil {
+		return err
+	}
+
+	// OOB update the key list
+	keys, _ := ListKeys(h.db, email)
+	_, _ = w.Write([]byte(`<div id="key-list" hx-swap-oob="innerHTML:#key-list">`))
+	if err := ViewAPIKeyList(keys).Render(ctx, w); err != nil {
+		return err
+	}
+	_, _ = w.Write([]byte(`</div>`))
+	return nil
+}
+
+// HandleSettingsDeleteKey deletes a key and returns empty HTML (removes the element).
+func (h *Handlers) HandleSettingsDeleteKey(c echo.Context) error {
+	email := auth.GetEmail(c)
+	id := c.Param("id")
+	DeleteKey(h.db, id, email)
+	// Return empty string to remove the element via hx-swap="outerHTML"
+	return c.String(http.StatusOK, "")
 }

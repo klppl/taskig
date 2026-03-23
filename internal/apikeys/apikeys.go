@@ -71,6 +71,28 @@ func DeleteKey(db *sql.DB, id, email string) error {
 	return nil
 }
 
+// ListKeys returns all API keys for a user (without the raw key).
+func ListKeys(db *sql.DB, email string) ([]APIKey, error) {
+	rows, err := db.Query(
+		"SELECT id, user_email, name, created_at FROM api_keys WHERE user_email = ? ORDER BY created_at DESC",
+		email,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("list api keys: %w", err)
+	}
+	defer rows.Close()
+
+	var keys []APIKey
+	for rows.Next() {
+		var k APIKey
+		if err := rows.Scan(&k.ID, &k.UserEmail, &k.Name, &k.CreatedAt); err != nil {
+			return nil, fmt.Errorf("scan api key: %w", err)
+		}
+		keys = append(keys, k)
+	}
+	return keys, nil
+}
+
 // HashKey returns the SHA-256 hex hash of a raw API key.
 func HashKey(rawKey string) string {
 	h := sha256.Sum256([]byte(rawKey))
