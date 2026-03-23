@@ -255,15 +255,19 @@ func (c *Client) MoveTask(listID, taskID, previousID string) (*Task, error) {
 	return &t, nil
 }
 
-// MoveTaskToList moves a task from one list to another by creating it in the
-// destination list and deleting it from the source. Returns the new task.
+// MoveTaskToList moves a task (and its subtasks) from one list to another by
+// recreating them in the destination list and deleting from the source.
 func (c *Client) MoveTaskToList(srcListID, taskID, dstListID string) (*Task, error) {
 	// Get the original task
 	src, err := c.svc.Tasks.Get(srcListID, taskID).Do()
 	if err != nil {
 		return nil, fmt.Errorf("get task for move: %w", err)
 	}
-	// Create in destination list
+
+	// Get subtasks before we delete anything
+	subtasks, _ := c.ListSubtasks(srcListID, taskID)
+
+	// Create parent in destination list
 	dst := &gtasks.Task{
 		Title: src.Title,
 		Notes: src.Notes,
@@ -276,12 +280,41 @@ func (c *Client) MoveTaskToList(srcListID, taskID, dstListID string) (*Task, err
 	if err != nil {
 		return nil, fmt.Errorf("insert task in destination list: %w", err)
 	}
-	// Delete from source list
+
+	// Recreate subtasks under the new parent
+	var movedChildren []Task
+	for _, sub := range subtasks {
+		childDst := &gtasks.Task{
+			Title: sub.Title,
+			Notes: sub.Notes,
+		}
+		if sub.Due != "" {
+			childDst.Due = sub.Due + "T00:00:00.000Z"
+		}
+		if sub.Completed {
+			childDst.Status = "completed"
+		}
+		childCreated, err := c.svc.Tasks.Insert(dstListID, childDst).Parent(created.Id).Do()
+		if err != nil {
+			continue // best effort — don't fail the whole move for a subtask
+		}
+		ct := ToTask(childCreated)
+		ct.ListID = dstListID
+		movedChildren = append(movedChildren, ct)
+
+		// Delete subtask from source
+		_ = c.svc.Tasks.Delete(srcListID, sub.ID).Do()
+	}
+
+	// Delete parent from source list
 	_ = c.svc.Tasks.Delete(srcListID, taskID).Do()
+
 	c.invalidateList(srcListID)
 	c.invalidateList(dstListID)
+
 	t := ToTask(created)
 	t.ListID = dstListID
+	t.Children = movedChildren
 	return &t, nil
 }
 
