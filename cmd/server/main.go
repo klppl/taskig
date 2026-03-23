@@ -102,7 +102,7 @@ func main() {
 	dashboard.POST("/settings/keys", apiV1Handlers.HandleSettingsCreateKey)
 	dashboard.DELETE("/settings/keys/:id", apiV1Handlers.HandleSettingsDeleteKey)
 
-	api := e.Group("/api", authMiddleware.RequireAuth, auth.RequireXHR)
+	api := e.Group("/api", authMiddleware.RequireAuth, auth.RequireXHR, i18n.Middleware())
 	api.GET("/today", taskHandlers.HandleToday)
 	api.POST("/preferences/hide-completed", taskHandlers.HandleToggleHideCompleted)
 	api.POST("/preferences/layout-density", preferences.HandleCycleLayoutDensity)
