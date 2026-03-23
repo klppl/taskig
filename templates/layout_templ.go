@@ -8,6 +8,12 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
+import (
+	"context"
+
+	"github.com/alex/google-tasks/internal/preferences"
+)
+
 func Layout(title string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -36,13 +42,35 @@ func Layout(title string) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layout.templ`, Line: 9, Col: 16}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layout.templ`, Line: 15, Col: 16}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link rel=\"icon\" href=\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✅</text></svg>\"><link rel=\"stylesheet\" href=\"/static/css/dist.css\"><script src=\"/static/js/htmx.min.js\"></script><script src=\"/static/js/sortable.min.js\"></script><script>\n\t\t\tif (window.matchMedia('(prefers-color-scheme: dark)').matches) {\n\t\t\t\tdocument.documentElement.classList.add('dark');\n\t\t\t}\n\t\t\twindow.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {\n\t\t\t\tdocument.documentElement.classList.toggle('dark', e.matches);\n\t\t\t});\n\t\t</script></head><body class=\"h-full bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100\" hx-headers='{\"X-Requested-With\": \"XMLHttpRequest\"}'>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link rel=\"icon\" href=\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✅</text></svg>\"><link rel=\"stylesheet\" href=\"/static/css/dist.css\"><script src=\"/static/js/htmx.min.js\"></script><script src=\"/static/js/sortable.min.js\"></script><script>\n\t\t\tif (window.matchMedia('(prefers-color-scheme: dark)').matches) {\n\t\t\t\tdocument.documentElement.classList.add('dark');\n\t\t\t}\n\t\t\twindow.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {\n\t\t\t\tdocument.documentElement.classList.toggle('dark', e.matches);\n\t\t\t});\n\t\t</script></head>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var3 = []any{bodyClass(ctx)}
+		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<body class=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var4 string
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var3).String())
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layout.templ`, Line: 1, Col: 0}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" hx-headers='{\"X-Requested-With\": \"XMLHttpRequest\"}'>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -50,12 +78,24 @@ func Layout(title string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		return nil
 	})
+}
+
+func bodyClass(ctx context.Context) string {
+	base := "h-full bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100"
+	switch preferences.DensityFromContext(ctx) {
+	case "compact":
+		return base + " density-compact"
+	case "comfortable":
+		return base + " density-comfortable"
+	default:
+		return base
+	}
 }
 
 var _ = templruntime.GeneratedTemplate
