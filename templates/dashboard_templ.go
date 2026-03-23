@@ -11,6 +11,7 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	"context"
 
+	"github.com/alex/google-tasks/internal/i18n"
 	"github.com/alex/google-tasks/internal/preferences"
 	"github.com/alex/google-tasks/internal/tasks"
 )
@@ -48,7 +49,20 @@ func DashboardPage(taskLists []tasks.TaskList, activeListID string, activeTasks 
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex h-full\"><!-- Sidebar --><aside id=\"sidebar\" class=\"hidden w-56 flex-shrink-0 border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 md:block\"><div class=\"flex h-full flex-col\"><div class=\"border-b border-gray-200 px-4 py-3 dark:border-gray-800\"><h2 hx-get=\"/api/today\" hx-target=\"#task-panel\" hx-push-url=\"/dashboard?list=_today\" class=\"cursor-pointer text-sm font-medium\">✅ Taskig</h2></div><nav id=\"tasklist-sidebar\" class=\"flex-1 overflow-y-auto p-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex h-full\"><!-- Sidebar --><aside id=\"sidebar\" class=\"hidden w-56 flex-shrink-0 border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 md:block\"><div class=\"flex h-full flex-col\"><div class=\"border-b border-gray-200 px-4 py-3 dark:border-gray-800\"><h2 hx-get=\"/api/today\" hx-target=\"#task-panel\" hx-push-url=\"/dashboard?list=_today\" class=\"cursor-pointer text-sm font-medium\">✅ ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var3 string
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(ctx, "app_name"))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/dashboard.templ`, Line: 26, Col: 36}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</h2></div><nav id=\"tasklist-sidebar\" class=\"flex-1 overflow-y-auto p-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -56,20 +70,20 @@ func DashboardPage(taskLists []tasks.TaskList, activeListID string, activeTasks 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</nav><div class=\"border-t border-gray-200 p-2 dark:border-gray-800\"><button hx-post=\"/api/preferences/layout-density\" class=\"flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-gray-500 transition hover:bg-gray-50 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800/50 dark:hover:text-gray-300\" title=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</nav><div class=\"border-t border-gray-200 p-2 dark:border-gray-800\"><button hx-post=\"/api/preferences/layout-density\" class=\"flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-gray-500 transition hover:bg-gray-50 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800/50 dark:hover:text-gray-300\" title=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(densityTooltip(ctx))
+			var templ_7745c5c3_Var4 string
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(densityTooltip(ctx))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/dashboard.templ`, Line: 34, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/dashboard.templ`, Line: 35, Col: 34}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -77,16 +91,42 @@ func DashboardPage(taskLists []tasks.TaskList, activeListID string, activeTasks 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(densityLabel(ctx))
+			var templ_7745c5c3_Var5 string
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(densityLabel(ctx))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/dashboard.templ`, Line: 37, Col: 26}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/dashboard.templ`, Line: 38, Col: 26}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</button> <a href=\"/settings\" class=\"flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-gray-500 transition hover:bg-gray-50 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800/50 dark:hover:text-gray-300\"><svg class=\"h-4 w-4\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z\"></path> <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M15 12a3 3 0 11-6 0 3 3 0 016 0z\"></path></svg> Settings</a><form method=\"POST\" action=\"/auth/logout\"><button type=\"submit\" class=\"flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-gray-500 transition hover:bg-gray-50 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800/50 dark:hover:text-gray-300\"><svg class=\"h-4 w-4\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1\"></path></svg> Sign out</button></form></div></div></aside><!-- Mobile hamburger --><button class=\"fixed left-4 top-4 z-50 rounded-lg bg-white p-2 shadow-md dark:bg-gray-800 md:hidden\" onclick=\"document.getElementById('sidebar').classList.toggle('hidden'); document.getElementById('sidebar').classList.toggle('fixed'); document.getElementById('sidebar').classList.toggle('inset-y-0'); document.getElementById('sidebar').classList.toggle('left-0'); document.getElementById('sidebar').classList.toggle('z-40');\"><svg class=\"h-5 w-5\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M4 6h16M4 12h16M4 18h16\"></path></svg></button><!-- Task list --><main id=\"task-panel\" class=\"flex-1 overflow-y-auto\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</button> <a href=\"/settings\" class=\"flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-gray-500 transition hover:bg-gray-50 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800/50 dark:hover:text-gray-300\"><svg class=\"h-4 w-4\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z\"></path> <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M15 12a3 3 0 11-6 0 3 3 0 016 0z\"></path></svg> ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var6 string
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(ctx, "settings"))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/dashboard.templ`, Line: 48, Col: 32}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</a><form method=\"POST\" action=\"/auth/logout\"><button type=\"submit\" class=\"flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-gray-500 transition hover:bg-gray-50 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800/50 dark:hover:text-gray-300\"><svg class=\"h-4 w-4\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1\"></path></svg> ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var7 string
+			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(ctx, "sign_out"))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/dashboard.templ`, Line: 58, Col: 33}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</button></form></div></div></aside><!-- Mobile hamburger --><button class=\"fixed left-4 top-4 z-50 rounded-lg bg-white p-2 shadow-md dark:bg-gray-800 md:hidden\" onclick=\"document.getElementById('sidebar').classList.toggle('hidden'); document.getElementById('sidebar').classList.toggle('fixed'); document.getElementById('sidebar').classList.toggle('inset-y-0'); document.getElementById('sidebar').classList.toggle('left-0'); document.getElementById('sidebar').classList.toggle('z-40');\"><svg class=\"h-5 w-5\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M4 6h16M4 12h16M4 18h16\"></path></svg></button><!-- Task list --><main id=\"task-panel\" class=\"flex-1 overflow-y-auto\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -101,12 +141,25 @@ func DashboardPage(taskLists []tasks.TaskList, activeListID string, activeTasks 
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"flex h-full items-center justify-center text-gray-400\">Select a task list to get started</div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"flex h-full items-center justify-center text-gray-400\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var8 string
+				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(ctx, "select_task_list"))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/dashboard.templ`, Line: 81, Col: 39}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</main><!-- Detail panel --><aside id=\"detail-panel\" class=\"hidden w-96 flex-shrink-0 overflow-y-auto border-l border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 lg:block\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</main><!-- Detail panel --><aside id=\"detail-panel\" class=\"hidden w-96 flex-shrink-0 overflow-y-auto border-l border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 lg:block\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -114,7 +167,7 @@ func DashboardPage(taskLists []tasks.TaskList, activeListID string, activeTasks 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</aside></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</aside></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -140,22 +193,22 @@ func getActiveListTitle(lists []tasks.TaskList, id string) string {
 func densityTooltip(ctx context.Context) string {
 	switch preferences.DensityFromContext(ctx) {
 	case "compact":
-		return "Layout: Compact"
+		return i18n.T(ctx, "layout_tooltip_compact")
 	case "comfortable":
-		return "Layout: Comfortable"
+		return i18n.T(ctx, "layout_tooltip_comfortable")
 	default:
-		return "Layout: Default"
+		return i18n.T(ctx, "layout_tooltip_default")
 	}
 }
 
 func densityLabel(ctx context.Context) string {
 	switch preferences.DensityFromContext(ctx) {
 	case "compact":
-		return "Compact"
+		return i18n.T(ctx, "layout_compact")
 	case "comfortable":
-		return "Comfortable"
+		return i18n.T(ctx, "layout_comfortable")
 	default:
-		return "Default"
+		return i18n.T(ctx, "layout_default")
 	}
 }
 
@@ -175,24 +228,24 @@ func densityIcon() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var5 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var5 == nil {
-			templ_7745c5c3_Var5 = templ.NopComponent
+		templ_7745c5c3_Var9 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var9 == nil {
+			templ_7745c5c3_Var9 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		switch preferences.DensityFromContext(ctx) {
 		case "compact":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<svg class=\"h-4 w-4\" viewBox=\"0 0 16 16\" fill=\"currentColor\"><rect x=\"2\" y=\"4\" width=\"12\" height=\"1.5\" rx=\"0.5\"></rect> <rect x=\"2\" y=\"7.25\" width=\"12\" height=\"1.5\" rx=\"0.5\"></rect> <rect x=\"2\" y=\"10.5\" width=\"12\" height=\"1.5\" rx=\"0.5\"></rect></svg>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<svg class=\"h-4 w-4\" viewBox=\"0 0 16 16\" fill=\"currentColor\"><rect x=\"2\" y=\"4\" width=\"12\" height=\"1.5\" rx=\"0.5\"></rect> <rect x=\"2\" y=\"7.25\" width=\"12\" height=\"1.5\" rx=\"0.5\"></rect> <rect x=\"2\" y=\"10.5\" width=\"12\" height=\"1.5\" rx=\"0.5\"></rect></svg>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "comfortable":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<svg class=\"h-4 w-4\" viewBox=\"0 0 16 16\" fill=\"currentColor\"><rect x=\"2\" y=\"2\" width=\"12\" height=\"1.5\" rx=\"0.5\"></rect> <rect x=\"2\" y=\"7.25\" width=\"12\" height=\"1.5\" rx=\"0.5\"></rect> <rect x=\"2\" y=\"12.5\" width=\"12\" height=\"1.5\" rx=\"0.5\"></rect></svg>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<svg class=\"h-4 w-4\" viewBox=\"0 0 16 16\" fill=\"currentColor\"><rect x=\"2\" y=\"2\" width=\"12\" height=\"1.5\" rx=\"0.5\"></rect> <rect x=\"2\" y=\"7.25\" width=\"12\" height=\"1.5\" rx=\"0.5\"></rect> <rect x=\"2\" y=\"12.5\" width=\"12\" height=\"1.5\" rx=\"0.5\"></rect></svg>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		default:
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<svg class=\"h-4 w-4\" viewBox=\"0 0 16 16\" fill=\"currentColor\"><rect x=\"2\" y=\"3\" width=\"12\" height=\"1.5\" rx=\"0.5\"></rect> <rect x=\"2\" y=\"7.25\" width=\"12\" height=\"1.5\" rx=\"0.5\"></rect> <rect x=\"2\" y=\"11.5\" width=\"12\" height=\"1.5\" rx=\"0.5\"></rect></svg>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<svg class=\"h-4 w-4\" viewBox=\"0 0 16 16\" fill=\"currentColor\"><rect x=\"2\" y=\"3\" width=\"12\" height=\"1.5\" rx=\"0.5\"></rect> <rect x=\"2\" y=\"7.25\" width=\"12\" height=\"1.5\" rx=\"0.5\"></rect> <rect x=\"2\" y=\"11.5\" width=\"12\" height=\"1.5\" rx=\"0.5\"></rect></svg>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

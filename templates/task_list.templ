@@ -2,6 +2,7 @@ package templates
 
 import (
 	"encoding/json"
+	"github.com/alex/google-tasks/internal/i18n"
 	"github.com/alex/google-tasks/internal/tasks"
 )
 
@@ -16,9 +17,9 @@ templ TaskListContent(listID string, listTitle string, taskItems []tasks.Task, h
 				class="text-xs text-gray-400 transition hover:text-gray-600 dark:hover:text-gray-300"
 			>
 				if hideCompleted {
-					Show completed
+					{ i18n.T(ctx, "show_completed") }
 				} else {
-					Hide completed
+					{ i18n.T(ctx, "hide_completed") }
 				}
 			</button>
 		</div>
@@ -34,7 +35,7 @@ templ TaskListContent(listID string, listTitle string, taskItems []tasks.Task, h
 				<input
 					type="text"
 					name="title"
-					placeholder="Add a task..."
+					placeholder={ i18n.T(ctx, "add_task_placeholder") }
 					required
 					class="flex-1 rounded-lg border border-gray-300 bg-transparent px-3 py-1.5 text-sm placeholder-gray-400 outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:placeholder-gray-500 dark:focus:border-blue-400"
 				/>
@@ -42,7 +43,7 @@ templ TaskListContent(listID string, listTitle string, taskItems []tasks.Task, h
 					type="submit"
 					class="rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
 				>
-					Add
+					{ i18n.T(ctx, "add") }
 				</button>
 			</div>
 		</form>
@@ -58,9 +59,9 @@ templ TaskListContent(listID string, listTitle string, taskItems []tasks.Task, h
 
 templ TodayContent(taskItems []tasks.Task) {
 	<div class="task-container px-4 py-6">
-		<h1 class="mb-4 text-lg font-medium tracking-tight">Today</h1>
+		<h1 class="mb-4 text-lg font-medium tracking-tight">{ i18n.T(ctx, "today") }</h1>
 		if len(taskItems) == 0 {
-			<p class="text-sm text-gray-400">No tasks due today or overdue.</p>
+			<p class="text-sm text-gray-400">{ i18n.T(ctx, "no_tasks_today") }</p>
 		} else {
 			<div id="task-list" class="task-list space-y-0.5">
 				for _, task := range taskItems {

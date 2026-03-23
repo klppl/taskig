@@ -3,12 +3,13 @@ package templates
 import (
 	"context"
 
+	"github.com/alex/google-tasks/internal/i18n"
 	"github.com/alex/google-tasks/internal/preferences"
 )
 
 templ Layout(title string) {
 	<!DOCTYPE html>
-	<html lang="en" class="h-full">
+	<html lang={ i18n.Locale(ctx) } class="h-full">
 	<head>
 		<meta charset="UTF-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>

@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"github.com/alex/google-tasks/internal/i18n"
 	"github.com/alex/google-tasks/internal/tasks"
 )
 
@@ -95,7 +96,7 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 						hx-swap="outerHTML swap:300ms"
 						class="rounded px-1.5 py-0.5 text-xs text-blue-600 transition hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
 					>
-						Today
+						{ i18n.T(ctx, "today_btn") }
 					</button>
 				}
 				<button
@@ -105,7 +106,7 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 					hx-swap="outerHTML swap:300ms"
 					class="rounded px-1.5 py-0.5 text-xs text-gray-500 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
 				>
-					Tmrw
+					{ i18n.T(ctx, "tomorrow_btn") }
 				</button>
 				<button
 					hx-post={ "/api/tasklists/" + listID + "/tasks/" + task.ID + "/reschedule" }
@@ -114,7 +115,7 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 					hx-swap="outerHTML swap:300ms"
 					class="rounded px-1.5 py-0.5 text-xs text-gray-500 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
 				>
-					Mon
+					{ i18n.T(ctx, "monday_btn") }
 				</button>
 			</div>
 		}
@@ -123,7 +124,7 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 				type="button"
 				onclick={ showSubtaskInput(task.ID) }
 				class="hidden text-gray-400 transition hover:text-blue-500 group-hover:block dark:hover:text-blue-400"
-				title="Add subtask"
+				title={ i18n.T(ctx, "add_subtask") }
 			>
 				<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -136,7 +137,7 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 			hx-target={ "#task-" + task.ID }
 			hx-swap="outerHTML"
 			hx-on::after-request="document.getElementById('detail-panel').innerHTML = document.getElementById('detail-empty-tpl') ? document.getElementById('detail-empty-tpl').innerHTML : '';"
-			hx-confirm="Delete this task?"
+			hx-confirm={ i18n.T(ctx, "delete_task_confirm") }
 			class="hidden text-gray-400 transition hover:text-red-500 group-hover:block dark:hover:text-red-400"
 		>
 			<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -174,7 +175,7 @@ templ TaskTree(listID string, task tasks.Task, depth int) {
 			<input
 				type="text"
 				name="title"
-				placeholder="Add subtask..."
+				placeholder={ i18n.T(ctx, "add_subtask_placeholder") }
 				required
 				class="flex-1 rounded border border-gray-300 bg-transparent px-2 py-1 text-sm placeholder-gray-400 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:placeholder-gray-500"
 			/>
@@ -182,7 +183,7 @@ templ TaskTree(listID string, task tasks.Task, depth int) {
 				type="submit"
 				class="rounded bg-blue-600 px-2 py-1 text-xs font-medium text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
 			>
-				Add
+				{ i18n.T(ctx, "add") }
 			</button>
 		</form>
 	</div>
@@ -190,14 +191,14 @@ templ TaskTree(listID string, task tasks.Task, depth int) {
 
 templ TaskDetailEmpty() {
 	<div class="flex h-full items-center justify-center p-6 text-sm text-gray-400">
-		Select a task to view details
+			{ i18n.T(ctx, "select_task_detail") }
 	</div>
 }
 
 templ TaskDetailPanel(listID string, task tasks.Task) {
 	<div class="flex h-full flex-col">
 		<div class="flex items-center justify-between border-b border-gray-200 px-5 py-3 dark:border-gray-800">
-			<h2 class="text-sm font-medium">Details</h2>
+			<h2 class="text-sm font-medium">{ i18n.T(ctx, "details") }</h2>
 			if task.ListTitle != "" {
 				<span class="text-xs text-gray-400">{ task.ListTitle }</span>
 			}
@@ -214,7 +215,7 @@ templ TaskDetailPanel(listID string, task tasks.Task) {
 			<div class="detail-fields space-y-4">
 				<!-- Title -->
 				<div>
-					<label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">Title</label>
+					<label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">{ i18n.T(ctx, "title") }</label>
 					<input
 						type="text"
 						name="title"
@@ -225,17 +226,17 @@ templ TaskDetailPanel(listID string, task tasks.Task) {
 				</div>
 				<!-- Notes -->
 				<div>
-					<label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">Notes</label>
+					<label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">{ i18n.T(ctx, "notes") }</label>
 					<textarea
 						name="notes"
 						rows="4"
-						placeholder="Add notes..."
+						placeholder={ i18n.T(ctx, "add_notes_placeholder") }
 						class="w-full resize-none rounded-md border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:focus:border-blue-400"
 					>{ task.Notes }</textarea>
 				</div>
 				<!-- Due date -->
 				<div>
-					<label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">Due date</label>
+					<label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">{ i18n.T(ctx, "due_date") }</label>
 					<input
 						type="date"
 						name="due"
@@ -248,31 +249,31 @@ templ TaskDetailPanel(listID string, task tasks.Task) {
 							onclick={ setDueAndSubmit(todayDate()) }
 							class="rounded px-2 py-1 text-xs text-gray-500 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
 						>
-							Today
+							{ i18n.T(ctx, "today_btn") }
 						</button>
 						<button
 							type="button"
 							onclick={ setDueAndSubmit(tomorrowDate()) }
 							class="rounded px-2 py-1 text-xs text-gray-500 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
 						>
-							Tmrw
+							{ i18n.T(ctx, "tomorrow_btn") }
 						</button>
 						<button
 							type="button"
 							onclick={ setDueAndSubmit(nextMondayDate()) }
 							class="rounded px-2 py-1 text-xs text-gray-500 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
 						>
-							Mon
+							{ i18n.T(ctx, "monday_btn") }
 						</button>
 					</div>
 				</div>
 				<!-- Status -->
 				<div class="flex items-center gap-2">
-					<span class="text-xs font-medium text-gray-500 dark:text-gray-400">Status:</span>
+					<span class="text-xs font-medium text-gray-500 dark:text-gray-400">{ i18n.T(ctx, "status") }</span>
 					if task.Completed {
-						<span class="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400">Completed</span>
+						<span class="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400">{ i18n.T(ctx, "completed") }</span>
 					} else {
-						<span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400">Active</span>
+						<span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400">{ i18n.T(ctx, "active") }</span>
 					}
 				</div>
 			</div>
@@ -280,7 +281,7 @@ templ TaskDetailPanel(listID string, task tasks.Task) {
 			if len(task.Children) > 0 {
 				<div>
 					<label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
-						Subtasks ({ fmt.Sprintf("%d", len(task.Children)) })
+						{ i18n.T(ctx, "subtasks") } ({ fmt.Sprintf("%d", len(task.Children)) })
 					</label>
 					<div class="space-y-1 rounded-md border border-gray-200 p-2 dark:border-gray-700">
 						for _, child := range task.Children {
@@ -317,13 +318,13 @@ templ TaskDetailPanel(listID string, task tasks.Task) {
 			}
 			<!-- Add subtask -->
 			<div>
-				<label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">Add subtask</label>
+				<label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">{ i18n.T(ctx, "add_subtask") }</label>
 				<div class="flex gap-2">
 					<input
 						type="text"
 						form={ "detail-subtask-form-" + task.ID }
 						name="title"
-						placeholder="Subtask title..."
+						placeholder={ i18n.T(ctx, "subtask_title_placeholder") }
 						class="flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:focus:border-blue-400"
 					/>
 					<button
@@ -331,7 +332,7 @@ templ TaskDetailPanel(listID string, task tasks.Task) {
 						form={ "detail-subtask-form-" + task.ID }
 						class="rounded-md bg-gray-100 px-3 py-2 text-xs font-medium text-gray-600 transition hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
 					>
-						Add
+						{ i18n.T(ctx, "add") }
 					</button>
 				</div>
 			</div>
@@ -342,16 +343,16 @@ templ TaskDetailPanel(listID string, task tasks.Task) {
 					hx-delete={ "/api/tasklists/" + listID + "/tasks/" + task.ID }
 					hx-target={ "#task-" + task.ID }
 					hx-swap="outerHTML"
-					hx-confirm="Delete this task?"
+					hx-confirm={ i18n.T(ctx, "delete_task_confirm") }
 					class="rounded-md px-3 py-1.5 text-sm text-red-500 transition hover:bg-red-50 dark:hover:bg-red-900/20"
 				>
-					Delete
+					{ i18n.T(ctx, "delete") }
 				</button>
 				<button
 					type="submit"
 					class="rounded-md bg-blue-600 px-4 py-1.5 text-sm font-medium text-white transition hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
 				>
-					Save
+					{ i18n.T(ctx, "save") }
 				</button>
 			</div>
 		</form>

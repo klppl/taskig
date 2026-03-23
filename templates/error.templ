@@ -1,5 +1,7 @@
 package templates
 
+import "github.com/alex/google-tasks/internal/i18n"
+
 templ ErrorPage(title string, message string) {
 	@Layout(title) {
 		<div class="flex min-h-full items-center justify-center">
@@ -12,7 +14,7 @@ templ ErrorPage(title string, message string) {
 					href="/login"
 					class="inline-block text-sm text-blue-600 hover:underline dark:text-blue-400"
 				>
-					Back to login
+					{ i18n.T(ctx, "back_to_login") }
 				</a>
 			</div>
 		</div>

@@ -1,6 +1,9 @@
 package templates
 
-import "github.com/alex/google-tasks/internal/tasks"
+import (
+	"github.com/alex/google-tasks/internal/i18n"
+	"github.com/alex/google-tasks/internal/tasks"
+)
 
 templ TasklistSidebar(lists []tasks.TaskList, activeID string) {
 	<button
@@ -13,7 +16,7 @@ templ TasklistSidebar(lists []tasks.TaskList, activeID string) {
 			templ.KV("hover:bg-gray-50 dark:hover:bg-gray-800/50", activeID != "_today"),
 		}
 	>
-		Today
+		{ i18n.T(ctx, "today") }
 	</button>
 	<div class="mb-1 border-b border-gray-200 dark:border-gray-700"></div>
 	for _, list := range lists {
