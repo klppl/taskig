@@ -17,14 +17,18 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 	<div
 		id={ "task-" + task.ID }
 		data-task-id={ task.ID }
+		hx-get={ "/api/tasklists/" + listID + "/tasks/" + task.ID + "/detail" + listTitleQS(task.ListTitle) }
+		hx-target="#detail-panel"
+		hx-swap="innerHTML"
+		hx-on:click="document.querySelectorAll('[data-task-selected]').forEach(el => { el.removeAttribute('data-task-selected'); el.classList.remove('bg-blue-50', 'dark:bg-blue-900/20'); }); this.setAttribute('data-task-selected', ''); this.classList.add('bg-blue-50', 'dark:bg-blue-900/20');"
 		class={
-			"group flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-gray-50 dark:hover:bg-gray-800/50",
+			"task-item group flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-gray-50 dark:hover:bg-gray-800/50",
 			templ.KV("opacity-50", task.Completed),
 		}
 	>
 		<!-- Drag handle -->
 		if !inTodayView {
-			<span class="drag-handle cursor-grab text-gray-300 opacity-0 transition group-hover:opacity-100 active:cursor-grabbing dark:text-gray-600">
+			<span onclick="event.stopPropagation()" class="drag-handle cursor-grab text-gray-300 opacity-0 transition group-hover:opacity-100 active:cursor-grabbing dark:text-gray-600">
 				<svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
 					<circle cx="9" cy="6" r="1.5"></circle>
 					<circle cx="15" cy="6" r="1.5"></circle>
@@ -38,7 +42,7 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 		if len(task.Children) > 0 {
 			<button
 				type="button"
-				onclick={ toggleChildren(task.ID) }
+				onclick={ toggleChildrenStop(task.ID) }
 				class="flex h-4 w-4 items-center justify-center text-gray-400 transition hover:text-gray-600 dark:hover:text-gray-300"
 				data-toggle-id={ task.ID }
 			>
@@ -52,20 +56,17 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 		<input
 			type="checkbox"
 			checked?={ task.Completed }
+			onclick="event.stopPropagation()"
 			hx-patch={ "/api/tasklists/" + listID + "/tasks/" + task.ID }
 			hx-vals={ taskVals(task) }
 			hx-target={ "#task-" + task.ID }
 			hx-swap="outerHTML"
 			class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600"
 		/>
-		<!-- Task title (click to open detail panel) -->
+		<!-- Task title -->
 		<span
-			hx-get={ "/api/tasklists/" + listID + "/tasks/" + task.ID + "/detail" + listTitleQS(task.ListTitle) }
-			hx-target="#detail-panel"
-			hx-swap="innerHTML"
-			hx-on:click="document.querySelectorAll('[data-task-selected]').forEach(el => { el.removeAttribute('data-task-selected'); el.classList.remove('bg-blue-50', 'dark:bg-blue-900/20'); }); this.closest('[id^=task-]').setAttribute('data-task-selected', ''); this.closest('[id^=task-]').classList.add('bg-blue-50', 'dark:bg-blue-900/20');"
 			class={
-				"flex-1 cursor-pointer text-sm",
+				"flex-1 text-sm",
 				templ.KV("line-through", task.Completed),
 			}
 		>
@@ -73,13 +74,13 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 		</span>
 		<!-- List name (shown in cross-list views) -->
 		if task.ListTitle != "" {
-			<span class="whitespace-nowrap text-xs text-gray-300 dark:text-gray-600">
+			<span class="meta-text whitespace-nowrap text-xs text-gray-300 dark:text-gray-600">
 				{ task.ListTitle }
 			</span>
 		}
 		<!-- Due date -->
 		if task.Due != "" {
-			<span class={ "whitespace-nowrap text-xs", dueDateClass(task.Due, task.Completed) }>
+			<span class={ "meta-text whitespace-nowrap text-xs", dueDateClass(task.Due, task.Completed) }>
 				{ formatDue(task.Due) }
 			</span>
 		}
@@ -210,7 +211,7 @@ templ TaskDetailPanel(listID string, task tasks.Task) {
 			if task.ListTitle != "" {
 				<input type="hidden" name="listTitle" value={ task.ListTitle }/>
 			}
-			<div class="space-y-4">
+			<div class="detail-fields space-y-4">
 				<!-- Title -->
 				<div>
 					<label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">Title</label>
@@ -387,6 +388,20 @@ func listTitleQS(listTitle string) string {
 }
 
 script toggleChildren(taskID string) {
+	const el = document.getElementById('children-' + taskID);
+	if (!el) return;
+	const btn = document.querySelector('[data-toggle-id="' + taskID + '"] svg');
+	if (el.style.display === 'none') {
+		el.style.display = '';
+		if (btn) btn.style.transform = '';
+	} else {
+		el.style.display = 'none';
+		if (btn) btn.style.transform = 'rotate(-90deg)';
+	}
+}
+
+script toggleChildrenStop(taskID string) {
+	event.stopPropagation();
 	const el = document.getElementById('children-' + taskID);
 	if (!el) return;
 	const btn = document.querySelector('[data-toggle-id="' + taskID + '"] svg');

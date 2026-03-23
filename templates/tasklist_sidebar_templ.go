@@ -31,7 +31,7 @@ func TasklistSidebar(lists []tasks.TaskList, activeID string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var2 = []any{"mb-1 w-full rounded-md px-3 py-2 text-left text-sm transition",
+		var templ_7745c5c3_Var2 = []any{"sidebar-item mb-1 w-full rounded-md px-3 py-2 text-left text-sm transition",
 			templ.KV("bg-gray-100 font-medium dark:bg-gray-800", activeID == "_today"),
 			templ.KV("hover:bg-gray-50 dark:hover:bg-gray-800/50", activeID != "_today"),
 		}
@@ -57,7 +57,7 @@ func TasklistSidebar(lists []tasks.TaskList, activeID string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		for _, list := range lists {
-			var templ_7745c5c3_Var4 = []any{"w-full rounded-md px-3 py-2 text-left text-sm transition",
+			var templ_7745c5c3_Var4 = []any{"sidebar-item w-full rounded-md px-3 py-2 text-left text-sm transition",
 				templ.KV("bg-gray-100 font-medium dark:bg-gray-800", list.ID == activeID),
 				templ.KV("hover:bg-gray-50 dark:hover:bg-gray-800/50", list.ID != activeID),
 			}

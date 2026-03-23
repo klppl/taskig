@@ -8,7 +8,7 @@ templ TasklistSidebar(lists []tasks.TaskList, activeID string) {
 		hx-target="#task-panel"
 		hx-push-url="/dashboard?list=_today"
 		class={
-			"mb-1 w-full rounded-md px-3 py-2 text-left text-sm transition",
+			"sidebar-item mb-1 w-full rounded-md px-3 py-2 text-left text-sm transition",
 			templ.KV("bg-gray-100 font-medium dark:bg-gray-800", activeID == "_today"),
 			templ.KV("hover:bg-gray-50 dark:hover:bg-gray-800/50", activeID != "_today"),
 		}
@@ -22,7 +22,7 @@ templ TasklistSidebar(lists []tasks.TaskList, activeID string) {
 			hx-target="#task-panel"
 			hx-push-url={ "/dashboard?list=" + list.ID }
 			class={
-				"w-full rounded-md px-3 py-2 text-left text-sm transition",
+				"sidebar-item w-full rounded-md px-3 py-2 text-left text-sm transition",
 				templ.KV("bg-gray-100 font-medium dark:bg-gray-800", list.ID == activeID),
 				templ.KV("hover:bg-gray-50 dark:hover:bg-gray-800/50", list.ID != activeID),
 			}

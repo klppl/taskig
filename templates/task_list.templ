@@ -6,7 +6,7 @@ import (
 )
 
 templ TaskListContent(listID string, listTitle string, taskItems []tasks.Task, hideCompleted bool) {
-	<div class="px-4 py-6">
+	<div class="task-container px-4 py-6">
 		<div class="mb-4 flex items-center justify-between">
 			<h1 class="text-lg font-medium tracking-tight">{ listTitle }</h1>
 			<button
@@ -47,7 +47,7 @@ templ TaskListContent(listID string, listTitle string, taskItems []tasks.Task, h
 			</div>
 		</form>
 		<!-- Task list -->
-		<div id="task-list" data-list-id={ listID } class="space-y-0.5">
+		<div id="task-list" data-list-id={ listID } class="task-list space-y-0.5">
 			for _, task := range taskItems {
 				@TaskTree(listID, task, 0)
 			}
@@ -57,12 +57,12 @@ templ TaskListContent(listID string, listTitle string, taskItems []tasks.Task, h
 }
 
 templ TodayContent(taskItems []tasks.Task) {
-	<div class="px-4 py-6">
+	<div class="task-container px-4 py-6">
 		<h1 class="mb-4 text-lg font-medium tracking-tight">Today</h1>
 		if len(taskItems) == 0 {
 			<p class="text-sm text-gray-400">No tasks due today or overdue.</p>
 		} else {
-			<div id="task-list" class="space-y-0.5">
+			<div id="task-list" class="task-list space-y-0.5">
 				for _, task := range taskItems {
 					@TaskItem(task.ListID, task, true)
 				}
