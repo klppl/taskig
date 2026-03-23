@@ -21,7 +21,7 @@ templ TasklistSidebar(lists []tasks.TaskList, activeID string) {
 	</button>
 	<div class="mb-1 border-b border-gray-200 dark:border-gray-700"></div>
 	for _, list := range lists {
-		<div class="flex items-center">
+		<div class="group flex items-center">
 			<button
 				hx-get={ "/api/tasklists/" + list.ID + "/tasks?title=" + list.Title }
 				hx-target="#task-panel"
