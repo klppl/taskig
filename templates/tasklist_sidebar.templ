@@ -21,33 +21,24 @@ templ TasklistSidebar(lists []tasks.TaskList, activeID string) {
 	</button>
 	<div class="mb-1 border-b border-gray-200 dark:border-gray-700"></div>
 	for _, list := range lists {
-		<div class="group flex items-center">
+		<div class="flex items-center">
+			<span
+				hx-post={ "/api/tasklists/" + list.ID + "/color?active=" + activeID }
+				hx-target="#tasklist-sidebar"
+				hx-swap="innerHTML"
+				class={ "ml-3 inline-block h-2.5 w-2.5 flex-shrink-0 cursor-pointer rounded-full transition-transform hover:scale-150", listcolor.DotClass(list.Color) }
+			></span>
 			<button
 				hx-get={ "/api/tasklists/" + list.ID + "/tasks?title=" + list.Title }
 				hx-target="#task-panel"
 				hx-push-url={ "/dashboard?list=" + list.ID }
 				class={
-					"sidebar-item flex-1 rounded-md px-3 py-2 text-left text-sm transition",
+					"sidebar-item flex-1 rounded-md px-2 py-2 text-left text-sm transition",
 					templ.KV("bg-gray-100 font-medium dark:bg-gray-800", list.ID == activeID),
 					templ.KV("hover:bg-gray-50 dark:hover:bg-gray-800/50", list.ID != activeID),
 				}
 			>
-				<span class="flex items-center gap-2">
-					<span class={ "inline-block h-2.5 w-2.5 flex-shrink-0 rounded-full", listcolor.DotClass(list.Color) }></span>
-					{ list.Title }
-				</span>
-			</button>
-			<button
-				hx-post={ "/api/tasklists/" + list.ID + "/color?active=" + activeID }
-				hx-target="#tasklist-sidebar"
-				hx-swap="innerHTML"
-				class="rounded p-1 text-gray-300 opacity-0 transition hover:text-gray-500 group-hover:opacity-100 dark:text-gray-600 dark:hover:text-gray-400"
-				title="Change color"
-				onclick="event.stopPropagation()"
-			>
-				<svg class="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
-					<path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 100-16 8 8 0 000 16z"></path>
-				</svg>
+				{ list.Title }
 			</button>
 		</div>
 	}
