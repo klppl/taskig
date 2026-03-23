@@ -247,36 +247,27 @@ templ TaskDetailPanel(listID string, task tasks.Task) {
 						<button
 							type="button"
 							onclick={ setDueAndSubmit(todayDate()) }
-							class="rounded px-2 py-1 text-xs text-gray-500 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+							class="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-0.5 text-xs font-medium text-gray-600 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:border-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
 						>
 							{ i18n.T(ctx, "today_btn") }
 						</button>
 						<button
 							type="button"
 							onclick={ setDueAndSubmit(tomorrowDate()) }
-							class="rounded px-2 py-1 text-xs text-gray-500 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+							class="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-0.5 text-xs font-medium text-gray-600 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:border-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
 						>
 							{ i18n.T(ctx, "tomorrow_btn") }
 						</button>
 						<button
 							type="button"
 							onclick={ setDueAndSubmit(nextMondayDate()) }
-							class="rounded px-2 py-1 text-xs text-gray-500 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+							class="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-0.5 text-xs font-medium text-gray-600 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:border-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
 						>
 							{ i18n.T(ctx, "monday_btn") }
 						</button>
 					</div>
 				</div>
-				<!-- Status -->
-				<div class="flex items-center gap-2">
-					<span class="text-xs font-medium text-gray-500 dark:text-gray-400">{ i18n.T(ctx, "status") }</span>
-					if task.Completed {
-						<span class="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400">{ i18n.T(ctx, "completed") }</span>
-					} else {
-						<span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400">{ i18n.T(ctx, "active") }</span>
-					}
 				</div>
-			</div>
 			<!-- Subtasks -->
 			if len(task.Children) > 0 {
 				<div>
