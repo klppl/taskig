@@ -220,6 +220,7 @@ templ TaskDetailPanel(listID string, task tasks.Task, taskLists []tasks.TaskList
 			hx-patch={ "/api/tasklists/" + listID + "/tasks/" + task.ID }
 			hx-target="#detail-panel"
 			hx-swap="innerHTML"
+			hx-trigger="submit, change from:find input[name=title], change from:find textarea[name=notes], change from:find input[name=due]"
 		>
 			if task.ListTitle != "" {
 				<input type="hidden" name="listTitle" value={ task.ListTitle }/>
@@ -358,7 +359,7 @@ templ TaskDetailPanel(listID string, task tasks.Task, taskLists []tasks.TaskList
 			</div>
 			</div>
 			<!-- Actions -->
-			<div class="mt-6 flex items-center justify-between border-t border-gray-200 pt-4 dark:border-gray-700">
+			<div class="mt-6 flex items-center border-t border-gray-200 pt-4 dark:border-gray-700">
 				<button
 					type="button"
 					hx-delete={ "/api/tasklists/" + listID + "/tasks/" + task.ID }
@@ -368,12 +369,6 @@ templ TaskDetailPanel(listID string, task tasks.Task, taskLists []tasks.TaskList
 					class="rounded-md px-3 py-1.5 text-sm text-red-500 transition hover:bg-red-50 dark:hover:bg-red-900/20"
 				>
 					{ i18n.T(ctx, "delete") }
-				</button>
-				<button
-					type="submit"
-					class="rounded-md bg-blue-600 px-4 py-1.5 text-sm font-medium text-white transition hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
-				>
-					{ i18n.T(ctx, "save") }
 				</button>
 			</div>
 		</form>
