@@ -9,6 +9,7 @@ import (
 	"github.com/alex/google-tasks/internal/cache"
 	"github.com/alex/google-tasks/internal/config"
 	"github.com/alex/google-tasks/internal/database"
+	"github.com/alex/google-tasks/internal/i18n"
 	"github.com/alex/google-tasks/internal/preferences"
 	"github.com/alex/google-tasks/internal/session"
 	"github.com/alex/google-tasks/internal/tasks"
@@ -24,6 +25,11 @@ func main() {
 	cfg, err := config.Load()
 	if err != nil {
 		log.Fatalf("config: %v", err)
+	}
+
+	// Load translations
+	if err := i18n.Load("locales"); err != nil {
+		log.Fatalf("i18n: %v", err)
 	}
 
 	// Wire view functions to break import cycle
@@ -75,8 +81,9 @@ func main() {
 	// Static files
 	e.Static("/static", "static")
 
-	// Public routes
-	e.GET("/login", func(c echo.Context) error {
+	// Public routes (with i18n for translated UI)
+	public := e.Group("", i18n.Middleware())
+	public.GET("/login", func(c echo.Context) error {
 		return templates.LoginPage().Render(c.Request().Context(), c.Response())
 	})
 	e.GET("/auth/google", authHandlers.HandleLogin)
@@ -89,7 +96,7 @@ func main() {
 	})
 
 	// Protected routes
-	dashboard := e.Group("", authMiddleware.RequireAuth, preferences.DensityMiddleware)
+	dashboard := e.Group("", authMiddleware.RequireAuth, i18n.Middleware(), preferences.DensityMiddleware)
 	dashboard.GET("/dashboard", taskHandlers.HandleDashboard)
 	dashboard.GET("/settings", apiV1Handlers.HandleSettingsPage)
 	dashboard.POST("/settings/keys", apiV1Handlers.HandleSettingsCreateKey)
@@ -99,6 +106,7 @@ func main() {
 	api.GET("/today", taskHandlers.HandleToday)
 	api.POST("/preferences/hide-completed", taskHandlers.HandleToggleHideCompleted)
 	api.POST("/preferences/layout-density", preferences.HandleCycleLayoutDensity)
+	api.POST("/preferences/locale", i18n.HandleSetLocale)
 	api.GET("/tasklists/:listId/tasks", taskHandlers.HandleListTasks)
 	api.POST("/tasklists/:listId/tasks", taskHandlers.HandleCreateTask)
 	api.PATCH("/tasklists/:listId/tasks/:taskId", taskHandlers.HandleUpdateTask)
