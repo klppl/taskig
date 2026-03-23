@@ -25,6 +25,7 @@ COPY --from=build /server .
 COPY --from=build /build/static/js/ static/js/
 COPY --from=css /build/static/css/dist.css static/css/dist.css
 COPY migrations/ migrations/
+COPY locales/ locales/
 RUN mkdir -p /app/data
 
 ENV DB_PATH=/app/data/google-tasks.db
