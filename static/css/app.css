@@ -32,8 +32,8 @@
   font-size: 0.75rem;
 }
 
-.density-compact .task-list > * + * {
-  margin-top: 0;
+.density-compact .task-item {
+  border-bottom-width: 0;
 }
 
 .density-compact .task-container {
@@ -60,9 +60,6 @@
   font-size: 1rem;
 }
 
-.density-comfortable .task-list > * + * {
-  margin-top: 0.25rem;
-}
 
 .density-comfortable .task-container {
   padding: 2rem 1.25rem;
