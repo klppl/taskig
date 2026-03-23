@@ -27,6 +27,10 @@
   "show_completed": "Visa slutf\u00f6rda",
   "hide_completed": "D\u00f6lj slutf\u00f6rda",
   "no_tasks_today": "Inga uppgifter f\u00f6r idag eller f\u00f6rsenade.",
+  "overdue": "F\u00f6rsenade",
+  "due_today": "Idag",
+  "all_caught_up": "Allt \u00e4r klart!",
+  "tasks_count": "uppgifter",
 
   "details": "Detaljer",
   "title": "Titel",

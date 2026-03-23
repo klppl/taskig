@@ -1,7 +1,10 @@
 package templates
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
+	"time"
 	"github.com/alex/google-tasks/internal/i18n"
 	"github.com/alex/google-tasks/internal/tasks"
 )
@@ -62,17 +65,117 @@ templ TaskListContent(listID string, listTitle string, taskItems []tasks.Task, h
 
 templ TodayContent(taskItems []tasks.Task) {
 	<div class="task-container px-4 py-6">
-		<h1 class="mb-4 text-lg font-medium tracking-tight">{ i18n.T(ctx, "today") }</h1>
-		if len(taskItems) == 0 {
-			<p class="text-sm text-gray-400">{ i18n.T(ctx, "no_tasks_today") }</p>
-		} else {
-			<div id="task-list" class="task-list">
-				for _, task := range taskItems {
-					@TaskItem(task.ListID, task, true)
+		<!-- Header -->
+		<div class="mb-6">
+			<p class="text-xs font-medium uppercase tracking-widest text-gray-400 dark:text-gray-500">{ todayDateFormatted(ctx) }</p>
+			<div class="mt-1 flex items-baseline gap-3">
+				<h1 class="text-xl font-semibold tracking-tight">{ i18n.T(ctx, "today") }</h1>
+				if len(taskItems) > 0 {
+					<span class="text-sm text-gray-400 dark:text-gray-500">{ fmt.Sprintf("%d", len(taskItems)) } { i18n.T(ctx, "tasks_count") }</span>
 				}
 			</div>
+		</div>
+		if len(taskItems) == 0 {
+			<div class="flex flex-col items-center justify-center py-16 text-center">
+				<div class="mb-3 rounded-full bg-green-100 p-3 dark:bg-green-900/30">
+					<svg class="h-6 w-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+					</svg>
+				</div>
+				<p class="text-sm font-medium text-gray-500 dark:text-gray-400">{ i18n.T(ctx, "all_caught_up") }</p>
+				<p class="mt-1 text-xs text-gray-400 dark:text-gray-500">{ i18n.T(ctx, "no_tasks_today") }</p>
+			</div>
+		} else {
+			@todaySections(taskItems)
 		}
 	</div>
+}
+
+templ todaySections(taskItems []tasks.Task) {
+	<!-- Split into overdue and today -->
+	if hasOverdue(taskItems) {
+		<div class="mb-6">
+			<div class="mb-2 flex items-center gap-2">
+				<span class="inline-block h-2 w-2 rounded-full bg-red-500"></span>
+				<h2 class="text-xs font-semibold uppercase tracking-wider text-red-600 dark:text-red-400">{ i18n.T(ctx, "overdue") }</h2>
+				<span class="text-xs text-red-400 dark:text-red-500">{ fmt.Sprintf("%d", countOverdue(taskItems)) }</span>
+			</div>
+			<div class="rounded-lg border border-red-200/60 bg-red-50/30 dark:border-red-900/30 dark:bg-red-950/20">
+				<div id="task-list-overdue" class="task-list">
+					for _, task := range taskItems {
+						if isOverdue(task.Due) && !task.Completed {
+							@TaskItem(task.ListID, task, true)
+						}
+					}
+				</div>
+			</div>
+		</div>
+	}
+	<div>
+		if hasOverdue(taskItems) {
+			<div class="mb-2 flex items-center gap-2">
+				<span class="inline-block h-2 w-2 rounded-full bg-amber-500"></span>
+				<h2 class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{ i18n.T(ctx, "due_today") }</h2>
+				<span class="text-xs text-gray-400 dark:text-gray-500">{ fmt.Sprintf("%d", countToday(taskItems)) }</span>
+			</div>
+		}
+		<div id="task-list" class="task-list">
+			for _, task := range taskItems {
+				if !isOverdue(task.Due) || task.Completed {
+					@TaskItem(task.ListID, task, true)
+				}
+			}
+		</div>
+	</div>
+}
+
+func hasOverdue(tasks []tasks.Task) bool {
+	for _, t := range tasks {
+		if isOverdue(t.Due) && !t.Completed {
+			return true
+		}
+	}
+	return false
+}
+
+func countOverdue(ts []tasks.Task) int {
+	n := 0
+	for _, t := range ts {
+		if isOverdue(t.Due) && !t.Completed {
+			n++
+		}
+	}
+	return n
+}
+
+func countToday(ts []tasks.Task) int {
+	n := 0
+	for _, t := range ts {
+		if !isOverdue(t.Due) || t.Completed {
+			n++
+		}
+	}
+	return n
+}
+
+func todayDateFormatted(ctx context.Context) string {
+	locale := i18n.Locale(ctx)
+	now := time.Now()
+	weekday := now.Weekday().String()
+	if locale == "sv" {
+		days := map[string]string{
+			"Monday": "M\u00e5ndag", "Tuesday": "Tisdag", "Wednesday": "Onsdag",
+			"Thursday": "Torsdag", "Friday": "Fredag", "Saturday": "L\u00f6rdag", "Sunday": "S\u00f6ndag",
+		}
+		months := map[string]string{
+			"January": "januari", "February": "februari", "March": "mars",
+			"April": "april", "May": "maj", "June": "juni",
+			"July": "juli", "August": "augusti", "September": "september",
+			"October": "oktober", "November": "november", "December": "december",
+		}
+		return days[weekday] + " " + fmt.Sprintf("%d", now.Day()) + " " + months[now.Month().String()]
+	}
+	return now.Format("Monday, January 2")
 }
 
 templ sortableInit() {
