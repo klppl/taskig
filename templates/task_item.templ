@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 	"github.com/alex/google-tasks/internal/i18n"
+	"github.com/alex/google-tasks/internal/listcolor"
 	"github.com/alex/google-tasks/internal/tasks"
 )
 
@@ -80,7 +81,7 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 			<!-- Metadata: list name + due date -->
 			<div class="flex flex-shrink-0 items-center gap-2">
 				if task.ListTitle != "" {
-					<span class="meta-text rounded bg-gray-100 px-1.5 py-0.5 text-[11px] font-medium text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+					<span class={ "meta-text rounded px-1.5 py-0.5 text-[11px] font-medium", listcolor.BadgeClasses(task.ListColor) }>
 						{ task.ListTitle }
 					</span>
 				}

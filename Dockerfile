@@ -4,6 +4,7 @@ WORKDIR /build
 RUN npm install tailwindcss @tailwindcss/cli
 COPY static/css/app.css static/css/app.css
 COPY templates/ templates/
+COPY internal/listcolor/ internal/listcolor/
 RUN npx @tailwindcss/cli -i static/css/app.css -o static/css/dist.css --minify
 
 # Stage 2: Build Go binary

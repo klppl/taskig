@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @source "../../templates/**/*.templ";
+@source "../../internal/listcolor/*.go";
 @custom-variant dark (&:where(.dark, .dark *));
 
 .htmx-swapping {

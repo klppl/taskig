@@ -11,21 +11,41 @@ import (
 	"github.com/a-h/templ"
 	"github.com/alex/google-tasks/internal/auth"
 	"github.com/alex/google-tasks/internal/cache"
+	"github.com/alex/google-tasks/internal/listcolor"
 	"github.com/labstack/echo/v4"
 )
 
 type Handlers struct {
-	cache *cache.Cache
+	cache  *cache.Cache
+	colors *listcolor.Store
 }
 
-func NewHandlers(c *cache.Cache) *Handlers {
-	return &Handlers{cache: c}
+func NewHandlers(c *cache.Cache, colors *listcolor.Store) *Handlers {
+	return &Handlers{cache: c, colors: colors}
 }
 
 func (h *Handlers) newClient(c echo.Context) *Client {
 	svc := auth.GetTasksClient(c)
 	email := auth.GetEmail(c)
 	return NewClient(svc, h.cache, email)
+}
+
+// applyColors populates Color field on task lists from the database.
+func (h *Handlers) applyColors(email string, lists []TaskList) {
+	colors := h.colors.GetAll(email)
+	for i := range lists {
+		lists[i].Color = colors[lists[i].ID]
+	}
+}
+
+// listTaskListsWithColors fetches task lists and populates their colors.
+func (h *Handlers) listTaskListsWithColors(c echo.Context, client *Client) ([]TaskList, error) {
+	lists, err := client.ListTaskLists()
+	if err != nil {
+		return nil, err
+	}
+	h.applyColors(auth.GetEmail(c), lists)
+	return lists, nil
 }
 
 func (h *Handlers) HandleDashboard(c echo.Context) error {
@@ -36,7 +56,7 @@ func (h *Handlers) HandleDashboard(c echo.Context) error {
 
 	client := h.newClient(c)
 
-	lists, err := client.ListTaskLists()
+	lists, err := h.listTaskListsWithColors(c, client)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "Failed to load task lists")
 	}
@@ -50,11 +70,20 @@ func (h *Handlers) HandleDashboard(c echo.Context) error {
 
 	hideCompleted := readHideCompleted(c)
 
+	// Build a color lookup for Today view tasks
+	colorMap := make(map[string]string)
+	for _, l := range lists {
+		colorMap[l.ID] = l.Color
+	}
+
 	if activeListID == "_today" {
 		today := time.Now().Format("2006-01-02")
 		activeTasks, err = client.ListTodayTasks(today)
 		if err != nil {
 			return c.String(http.StatusInternalServerError, "Failed to load tasks")
+		}
+		for i := range activeTasks {
+			activeTasks[i].ListColor = colorMap[activeTasks[i].ListID]
 		}
 	} else if activeListID != "" {
 		flat, err := client.ListTasks(activeListID, !hideCompleted)
@@ -91,6 +120,10 @@ func (h *Handlers) HandleListTasks(c echo.Context) error {
 		lists, listErr = client.ListTaskLists()
 	}()
 	wg.Wait()
+
+	if listErr == nil {
+		h.applyColors(auth.GetEmail(c), lists)
+	}
 
 	if taskErr != nil {
 		return renderError(c, "Failed to load tasks")
@@ -187,7 +220,7 @@ func (h *Handlers) HandleUpdateTask(c echo.Context) error {
 	}
 
 	task.ListTitle = listTitle
-	lists, _ := client.ListTaskLists()
+	lists, _ := h.listTaskListsWithColors(c, client)
 
 	// Render updated detail panel (primary response)
 	if err := ViewTaskDetailPanel(listID, *task, lists).Render(ctx, w); err != nil {
@@ -232,6 +265,8 @@ func (h *Handlers) HandleGetDetail(c echo.Context) error {
 	}
 	if listErr != nil {
 		lists = nil
+	} else {
+		h.applyColors(auth.GetEmail(c), lists)
 	}
 
 	task.Children = subtasks
@@ -283,6 +318,10 @@ func (h *Handlers) HandleMoveTaskToList(c echo.Context) error {
 	}()
 	wg.Wait()
 
+	if listErr == nil {
+		h.applyColors(auth.GetEmail(c), lists)
+	}
+
 	ctx := c.Request().Context()
 	w := c.Response()
 
@@ -325,6 +364,19 @@ func (h *Handlers) HandleToday(c echo.Context) error {
 
 	if taskErr != nil {
 		return renderError(c, "Failed to load tasks")
+	}
+
+	// Apply colors to lists and today tasks
+	if listErr == nil {
+		email := auth.GetEmail(c)
+		h.applyColors(email, lists)
+		colorMap := make(map[string]string)
+		for _, l := range lists {
+			colorMap[l.ID] = l.Color
+		}
+		for i := range taskItems {
+			taskItems[i].ListColor = colorMap[taskItems[i].ListID]
+		}
 	}
 
 	ctx := c.Request().Context()
@@ -416,6 +468,28 @@ func (h *Handlers) HandleToggleHideCompleted(c echo.Context) error {
 	taskItems := BuildTaskTree(flatTasks)
 
 	return ViewTaskListContent(listID, listTitle, taskItems, hideCompleted).Render(c.Request().Context(), c.Response())
+}
+
+func (h *Handlers) HandleCycleListColor(c echo.Context) error {
+	email := auth.GetEmail(c)
+	listID := c.Param("listId")
+
+	current := h.colors.Get(email, listID)
+	next := listcolor.CycleNext(current)
+	if err := h.colors.Set(email, listID, next); err != nil {
+		return renderError(c, "Failed to save color")
+	}
+
+	// Re-render the sidebar with updated colors
+	client := h.newClient(c)
+	lists, err := client.ListTaskLists()
+	if err != nil {
+		return renderError(c, "Failed to load lists")
+	}
+	h.applyColors(email, lists)
+
+	activeListID := c.QueryParam("active")
+	return ViewTasklistSidebarOOB(lists, activeListID).Render(c.Request().Context(), c.Response())
 }
 
 func readHideCompleted(c echo.Context) bool {

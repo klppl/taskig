@@ -10,6 +10,7 @@ import (
 	"github.com/alex/google-tasks/internal/config"
 	"github.com/alex/google-tasks/internal/database"
 	"github.com/alex/google-tasks/internal/i18n"
+	"github.com/alex/google-tasks/internal/listcolor"
 	"github.com/alex/google-tasks/internal/preferences"
 	"github.com/alex/google-tasks/internal/session"
 	"github.com/alex/google-tasks/internal/tasks"
@@ -67,7 +68,8 @@ func main() {
 
 	// Task handlers
 	appCache := cache.New()
-	taskHandlers := tasks.NewHandlers(appCache)
+	colorStore := listcolor.NewStore(db)
+	taskHandlers := tasks.NewHandlers(appCache, colorStore)
 
 	// API key middleware & handlers
 	apiKeyMiddleware := apikeys.NewMiddleware(db, encryptionKey, authHandlers.OAuthConfig())
@@ -116,6 +118,7 @@ func main() {
 	api.POST("/tasklists/:listId/tasks/:taskId/move", taskHandlers.HandleMoveTask)
 	api.POST("/tasklists/:listId/tasks/:taskId/subtasks", taskHandlers.HandleCreateSubtask)
 	api.POST("/tasklists/:listId/tasks/:taskId/move-to-list", taskHandlers.HandleMoveTaskToList)
+	api.POST("/tasklists/:listId/color", taskHandlers.HandleCycleListColor)
 
 	// External JSON API (API key auth)
 	v1 := e.Group("/api/v1", apiKeyMiddleware.RequireAPIKey)

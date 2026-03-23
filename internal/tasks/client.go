@@ -25,6 +25,7 @@ type Task struct {
 	Parent    string // parent task ID, empty if top-level
 	ListID    string
 	ListTitle string // populated in cross-list views (e.g. Today)
+	ListColor string // populated in cross-list views (e.g. Today)
 	Children  []Task // populated by BuildTaskTree
 }
 
@@ -32,6 +33,7 @@ type Task struct {
 type TaskList struct {
 	ID    string
 	Title string
+	Color string // locally-stored color preference
 }
 
 // Client wraps the Google Tasks API service.
