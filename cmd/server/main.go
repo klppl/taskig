@@ -9,6 +9,7 @@ import (
 	"github.com/alex/google-tasks/internal/cache"
 	"github.com/alex/google-tasks/internal/config"
 	"github.com/alex/google-tasks/internal/database"
+	"github.com/alex/google-tasks/internal/preferences"
 	"github.com/alex/google-tasks/internal/session"
 	"github.com/alex/google-tasks/internal/tasks"
 	"github.com/alex/google-tasks/templates"
@@ -34,6 +35,9 @@ func main() {
 	tasks.ViewTasklistSidebarOOB = templates.TasklistSidebarOOB
 	tasks.ViewTodayContent = templates.TodayContent
 	tasks.ViewTaskTree = templates.TaskTree
+	apikeys.ViewSettingsPage = templates.SettingsPage
+	apikeys.ViewAPIKeyCreated = templates.APIKeyCreated
+	apikeys.ViewAPIKeyList = templates.APIKeyList
 
 	// Database
 	dbPath := cfg.DBPath
@@ -85,12 +89,16 @@ func main() {
 	})
 
 	// Protected routes
-	dashboard := e.Group("", authMiddleware.RequireAuth)
+	dashboard := e.Group("", authMiddleware.RequireAuth, preferences.DensityMiddleware)
 	dashboard.GET("/dashboard", taskHandlers.HandleDashboard)
+	dashboard.GET("/settings", apiV1Handlers.HandleSettingsPage)
+	dashboard.POST("/settings/keys", apiV1Handlers.HandleSettingsCreateKey)
+	dashboard.DELETE("/settings/keys/:id", apiV1Handlers.HandleSettingsDeleteKey)
 
 	api := e.Group("/api", authMiddleware.RequireAuth, auth.RequireXHR)
 	api.GET("/today", taskHandlers.HandleToday)
 	api.POST("/preferences/hide-completed", taskHandlers.HandleToggleHideCompleted)
+	api.POST("/preferences/layout-density", preferences.HandleCycleLayoutDensity)
 	api.GET("/tasklists/:listId/tasks", taskHandlers.HandleListTasks)
 	api.POST("/tasklists/:listId/tasks", taskHandlers.HandleCreateTask)
 	api.PATCH("/tasklists/:listId/tasks/:taskId", taskHandlers.HandleUpdateTask)
