@@ -1,6 +1,11 @@
 package templates
 
-import "github.com/alex/google-tasks/internal/tasks"
+import (
+	"context"
+
+	"github.com/alex/google-tasks/internal/preferences"
+	"github.com/alex/google-tasks/internal/tasks"
+)
 
 templ DashboardPage(taskLists []tasks.TaskList, activeListID string, activeTasks []tasks.Task, hideCompleted bool) {
 	@Layout("Taskig") {
@@ -11,25 +16,48 @@ templ DashboardPage(taskLists []tasks.TaskList, activeListID string, activeTasks
 				class="hidden w-56 flex-shrink-0 border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 md:block"
 			>
 				<div class="flex h-full flex-col">
-					<div class="flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-gray-800">
+					<div class="border-b border-gray-200 px-4 py-3 dark:border-gray-800">
 						<h2
 							hx-get="/api/today"
 							hx-target="#task-panel"
 							hx-push-url="/dashboard?list=_today"
 							class="cursor-pointer text-sm font-medium"
 						>✅ Taskig</h2>
-						<form method="POST" action="/auth/logout">
-							<button
-								type="submit"
-								class="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-							>
-								Sign out
-							</button>
-						</form>
 					</div>
 					<nav id="tasklist-sidebar" class="flex-1 overflow-y-auto p-2">
 						@TasklistSidebar(taskLists, activeListID)
 					</nav>
+					<div class="border-t border-gray-200 p-2 dark:border-gray-800">
+						<button
+							hx-post="/api/preferences/layout-density"
+							class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-gray-500 transition hover:bg-gray-50 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800/50 dark:hover:text-gray-300"
+							title={ densityTooltip(ctx) }
+						>
+							@densityIcon()
+							{ densityLabel(ctx) }
+						</button>
+						<a
+							href="/settings"
+							class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-gray-500 transition hover:bg-gray-50 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800/50 dark:hover:text-gray-300"
+						>
+							<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+							</svg>
+							Settings
+						</a>
+						<form method="POST" action="/auth/logout">
+							<button
+								type="submit"
+								class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-gray-500 transition hover:bg-gray-50 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800/50 dark:hover:text-gray-300"
+							>
+								<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+								</svg>
+								Sign out
+							</button>
+						</form>
+					</div>
 				</div>
 			</aside>
 			<!-- Mobile hamburger -->
@@ -71,4 +99,49 @@ func getActiveListTitle(lists []tasks.TaskList, id string) string {
 		}
 	}
 	return ""
+}
+
+func densityTooltip(ctx context.Context) string {
+	switch preferences.DensityFromContext(ctx) {
+	case "compact":
+		return "Layout: Compact"
+	case "comfortable":
+		return "Layout: Comfortable"
+	default:
+		return "Layout: Default"
+	}
+}
+
+func densityLabel(ctx context.Context) string {
+	switch preferences.DensityFromContext(ctx) {
+	case "compact":
+		return "Compact"
+	case "comfortable":
+		return "Comfortable"
+	default:
+		return "Default"
+	}
+}
+
+templ densityIcon() {
+	switch preferences.DensityFromContext(ctx) {
+		case "compact":
+			<svg class="h-4 w-4" viewBox="0 0 16 16" fill="currentColor">
+				<rect x="2" y="4" width="12" height="1.5" rx="0.5"></rect>
+				<rect x="2" y="7.25" width="12" height="1.5" rx="0.5"></rect>
+				<rect x="2" y="10.5" width="12" height="1.5" rx="0.5"></rect>
+			</svg>
+		case "comfortable":
+			<svg class="h-4 w-4" viewBox="0 0 16 16" fill="currentColor">
+				<rect x="2" y="2" width="12" height="1.5" rx="0.5"></rect>
+				<rect x="2" y="7.25" width="12" height="1.5" rx="0.5"></rect>
+				<rect x="2" y="12.5" width="12" height="1.5" rx="0.5"></rect>
+			</svg>
+		default:
+			<svg class="h-4 w-4" viewBox="0 0 16 16" fill="currentColor">
+				<rect x="2" y="3" width="12" height="1.5" rx="0.5"></rect>
+				<rect x="2" y="7.25" width="12" height="1.5" rx="0.5"></rect>
+				<rect x="2" y="11.5" width="12" height="1.5" rx="0.5"></rect>
+			</svg>
+	}
 }
