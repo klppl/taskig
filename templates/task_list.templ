@@ -28,20 +28,23 @@ templ TaskListContent(listID string, listTitle string, taskItems []tasks.Task, h
 			hx-post={ "/api/tasklists/" + listID + "/tasks" }
 			hx-target="#task-list"
 			hx-swap="afterbegin"
-			hx-on::after-request="this.reset()"
-			class="mb-4"
+			hx-on::after-request="this.reset(); this.querySelector('input').blur();"
+			class="group/form mb-5"
 		>
-			<div class="flex gap-2">
+			<div class="flex items-center gap-2 rounded-lg border border-dashed border-gray-300 px-3 py-2 transition-all focus-within:border-solid focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-sm dark:border-gray-700 dark:focus-within:border-blue-400 dark:focus-within:bg-gray-900">
+				<svg class="h-4 w-4 flex-shrink-0 text-gray-400 transition group-focus-within/form:text-blue-500 dark:text-gray-600 dark:group-focus-within/form:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+				</svg>
 				<input
 					type="text"
 					name="title"
 					placeholder={ i18n.T(ctx, "add_task_placeholder") }
 					required
-					class="flex-1 rounded-lg border border-gray-300 bg-transparent px-3 py-1.5 text-sm placeholder-gray-400 outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:placeholder-gray-500 dark:focus:border-blue-400"
+					class="flex-1 bg-transparent text-sm placeholder-gray-400 outline-none dark:placeholder-gray-500"
 				/>
 				<button
 					type="submit"
-					class="rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+					class="hidden rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-blue-700 group-focus-within/form:block dark:bg-blue-500 dark:hover:bg-blue-600"
 				>
 					{ i18n.T(ctx, "add") }
 				</button>
