@@ -4,7 +4,9 @@ import (
 	"log"
 	"strings"
 
+	"github.com/alex/google-tasks/internal/apikeys"
 	"github.com/alex/google-tasks/internal/auth"
+	"github.com/alex/google-tasks/internal/cache"
 	"github.com/alex/google-tasks/internal/config"
 	"github.com/alex/google-tasks/internal/database"
 	"github.com/alex/google-tasks/internal/session"
@@ -54,7 +56,12 @@ func main() {
 	authMiddleware := auth.NewMiddleware(store, authHandlers.OAuthConfig())
 
 	// Task handlers
-	taskHandlers := tasks.NewHandlers()
+	appCache := cache.New()
+	taskHandlers := tasks.NewHandlers(appCache)
+
+	// API key middleware & handlers
+	apiKeyMiddleware := apikeys.NewMiddleware(db, encryptionKey, authHandlers.OAuthConfig())
+	apiV1Handlers := apikeys.NewHandlers(db, appCache)
 
 	// Echo setup
 	e := echo.New()
@@ -92,6 +99,16 @@ func main() {
 	api.POST("/tasklists/:listId/tasks/:taskId/reschedule", taskHandlers.HandleRescheduleTask)
 	api.POST("/tasklists/:listId/tasks/:taskId/move", taskHandlers.HandleMoveTask)
 	api.POST("/tasklists/:listId/tasks/:taskId/subtasks", taskHandlers.HandleCreateSubtask)
+
+	// External JSON API (API key auth)
+	v1 := e.Group("/api/v1", apiKeyMiddleware.RequireAPIKey)
+	v1.POST("/tasks", apiV1Handlers.HandleCreateTask)
+	v1.GET("/lists", apiV1Handlers.HandleListLists)
+
+	// API key management (session auth, no XHR requirement)
+	keys := e.Group("/api/v1/keys", authMiddleware.RequireAuth)
+	keys.POST("", apiV1Handlers.HandleCreateKey)
+	keys.DELETE("/:id", apiV1Handlers.HandleDeleteKey)
 
 	e.Logger.Fatal(e.Start(":" + cfg.Port))
 }

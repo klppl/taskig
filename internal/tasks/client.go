@@ -3,8 +3,16 @@ package tasks
 import (
 	"fmt"
 	"strings"
+	"sync"
+	"time"
 
+	"github.com/alex/google-tasks/internal/cache"
 	gtasks "google.golang.org/api/tasks/v1"
+)
+
+const (
+	taskListsTTL = 60 * time.Second
+	tasksTTL     = 30 * time.Second
 )
 
 // Task is the app's representation of a Google Task.
@@ -28,16 +36,27 @@ type TaskList struct {
 
 // Client wraps the Google Tasks API service.
 type Client struct {
-	svc *gtasks.Service
+	svc     *gtasks.Service
+	cache   *cache.Cache
+	userKey string
 }
 
-// NewClient creates a new Tasks API wrapper.
-func NewClient(svc *gtasks.Service) *Client {
-	return &Client{svc: svc}
+// NewClient creates a new Tasks API wrapper with caching.
+func NewClient(svc *gtasks.Service, c *cache.Cache, userKey string) *Client {
+	return &Client{svc: svc, cache: c, userKey: userKey}
+}
+
+func (c *Client) cacheKey(parts ...string) string {
+	return c.userKey + ":" + strings.Join(parts, ":")
 }
 
 // ListTaskLists returns all task lists for the authenticated user.
 func (c *Client) ListTaskLists() ([]TaskList, error) {
+	key := c.cacheKey("tasklists")
+	if cached, ok := c.cache.Get(key); ok {
+		return cached.([]TaskList), nil
+	}
+
 	resp, err := c.svc.Tasklists.List().MaxResults(100).Do()
 	if err != nil {
 		return nil, fmt.Errorf("list tasklists: %w", err)
@@ -47,11 +66,17 @@ func (c *Client) ListTaskLists() ([]TaskList, error) {
 	for _, item := range resp.Items {
 		lists = append(lists, ToTaskList(item))
 	}
+	c.cache.Set(key, lists, taskListsTTL)
 	return lists, nil
 }
 
 // ListTasks returns all tasks in a given task list.
 func (c *Client) ListTasks(listID string, showCompleted bool) ([]Task, error) {
+	key := c.cacheKey("tasks", listID, fmt.Sprintf("%v", showCompleted))
+	if cached, ok := c.cache.Get(key); ok {
+		return cached.([]Task), nil
+	}
+
 	resp, err := c.svc.Tasks.List(listID).ShowCompleted(showCompleted).ShowHidden(showCompleted).MaxResults(100).Do()
 	if err != nil {
 		return nil, fmt.Errorf("list tasks: %w", err)
@@ -63,25 +88,44 @@ func (c *Client) ListTasks(listID string, showCompleted bool) ([]Task, error) {
 		t.ListID = listID
 		tasks = append(tasks, t)
 	}
+	c.cache.Set(key, tasks, tasksTTL)
 	return tasks, nil
 }
 
 // ListTodayTasks returns tasks due today or overdue across all lists.
+// Fetches all lists concurrently for speed.
 func (c *Client) ListTodayTasks(today string) ([]Task, error) {
 	lists, err := c.ListTaskLists()
 	if err != nil {
 		return nil, err
 	}
 
+	type listResult struct {
+		tasks []Task
+		title string
+	}
+
+	results := make([]listResult, len(lists))
+	var wg sync.WaitGroup
+	wg.Add(len(lists))
+
+	for i, list := range lists {
+		go func(idx int, l TaskList) {
+			defer wg.Done()
+			tasks, err := c.ListTasks(l.ID, false)
+			if err != nil {
+				return
+			}
+			results[idx] = listResult{tasks: tasks, title: l.Title}
+		}(i, list)
+	}
+	wg.Wait()
+
 	var result []Task
-	for _, list := range lists {
-		tasks, err := c.ListTasks(list.ID, false)
-		if err != nil {
-			continue
-		}
-		for _, t := range tasks {
+	for _, lr := range results {
+		for _, t := range lr.tasks {
 			if t.Due != "" && t.Due <= today {
-				t.ListTitle = list.Title
+				t.ListTitle = lr.title
 				result = append(result, t)
 			}
 		}
@@ -127,6 +171,7 @@ func (c *Client) insertTask(listID, title, notes, parentID string) (*Task, error
 	if err != nil {
 		return nil, fmt.Errorf("create task: %w", err)
 	}
+	c.invalidateList(listID)
 	t := ToTask(created)
 	t.ListID = listID
 	return &t, nil
@@ -149,6 +194,7 @@ func (c *Client) UpdateTask(listID, taskID, title, notes, due string) (*Task, er
 	if err != nil {
 		return nil, fmt.Errorf("update task: %w", err)
 	}
+	c.invalidateList(listID)
 	t := ToTask(updated)
 	t.ListID = listID
 	return &t, nil
@@ -163,6 +209,7 @@ func (c *Client) PatchDueDate(listID, taskID, due string) (*Task, error) {
 	if err != nil {
 		return nil, fmt.Errorf("patch due date: %w", err)
 	}
+	c.invalidateList(listID)
 	t := ToTask(updated)
 	t.ListID = listID
 	return &t, nil
@@ -185,6 +232,7 @@ func (c *Client) CompleteTask(listID, taskID string, completed bool) (*Task, err
 	if err != nil {
 		return nil, fmt.Errorf("complete task: %w", err)
 	}
+	c.invalidateList(listID)
 	t := ToTask(updated)
 	t.ListID = listID
 	return &t, nil
@@ -201,6 +249,7 @@ func (c *Client) MoveTask(listID, taskID, previousID string) (*Task, error) {
 	if err != nil {
 		return nil, fmt.Errorf("move task: %w", err)
 	}
+	c.invalidateList(listID)
 	t := ToTask(moved)
 	t.ListID = listID
 	return &t, nil
@@ -211,6 +260,7 @@ func (c *Client) DeleteTask(listID, taskID string) error {
 	if err := c.svc.Tasks.Delete(listID, taskID).Do(); err != nil {
 		return fmt.Errorf("delete task: %w", err)
 	}
+	c.invalidateList(listID)
 	return nil
 }
 
@@ -223,6 +273,11 @@ func (c *Client) GetTask(listID, taskID string) (*Task, error) {
 	t := ToTask(gt)
 	t.ListID = listID
 	return &t, nil
+}
+
+// invalidateList removes cached task data for a list.
+func (c *Client) invalidateList(listID string) {
+	c.cache.InvalidatePrefix(c.cacheKey("tasks", listID))
 }
 
 // ToTask converts a Google Tasks API task to our Task type.

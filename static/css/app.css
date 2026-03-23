@@ -6,3 +6,19 @@
   opacity: 0;
   transition: opacity 300ms ease-out;
 }
+
+/* Show a subtle pulse on elements while HTMX request is in-flight */
+.htmx-request {
+  opacity: 0.6;
+  transition: opacity 200ms ease-in;
+}
+
+.htmx-request.htmx-request {
+  opacity: 0.6;
+  animation: htmx-pulse 1s ease-in-out infinite;
+}
+
+@keyframes htmx-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 0.4; }
+}

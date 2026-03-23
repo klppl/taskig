@@ -5,17 +5,27 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/a-h/templ"
 	"github.com/alex/google-tasks/internal/auth"
+	"github.com/alex/google-tasks/internal/cache"
 	"github.com/labstack/echo/v4"
 )
 
-type Handlers struct{}
+type Handlers struct {
+	cache *cache.Cache
+}
 
-func NewHandlers() *Handlers {
-	return &Handlers{}
+func NewHandlers(c *cache.Cache) *Handlers {
+	return &Handlers{cache: c}
+}
+
+func (h *Handlers) newClient(c echo.Context) *Client {
+	svc := auth.GetTasksClient(c)
+	email := auth.GetEmail(c)
+	return NewClient(svc, h.cache, email)
 }
 
 func (h *Handlers) HandleDashboard(c echo.Context) error {
@@ -24,7 +34,7 @@ func (h *Handlers) HandleDashboard(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/login")
 	}
 
-	client := NewClient(svc)
+	client := h.newClient(c)
 
 	lists, err := client.ListTaskLists()
 	if err != nil {
@@ -58,14 +68,31 @@ func (h *Handlers) HandleDashboard(c echo.Context) error {
 }
 
 func (h *Handlers) HandleListTasks(c echo.Context) error {
-	svc := auth.GetTasksClient(c)
-	client := NewClient(svc)
+	client := h.newClient(c)
 	listID := c.Param("listId")
 	listTitle := c.QueryParam("title")
 	hideCompleted := readHideCompleted(c)
 
-	flatTasks, err := client.ListTasks(listID, !hideCompleted)
-	if err != nil {
+	// Fetch tasks and task lists in parallel
+	var (
+		flatTasks []Task
+		lists     []TaskList
+		taskErr   error
+		listErr   error
+	)
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		flatTasks, taskErr = client.ListTasks(listID, !hideCompleted)
+	}()
+	go func() {
+		defer wg.Done()
+		lists, listErr = client.ListTaskLists()
+	}()
+	wg.Wait()
+
+	if taskErr != nil {
 		return renderError(c, "Failed to load tasks")
 	}
 	taskItems := BuildTaskTree(flatTasks)
@@ -73,14 +100,11 @@ func (h *Handlers) HandleListTasks(c echo.Context) error {
 	ctx := c.Request().Context()
 	w := c.Response()
 
-	// Render task list content (primary swap into #task-panel)
 	if err := ViewTaskListContent(listID, listTitle, taskItems, hideCompleted).Render(ctx, w); err != nil {
 		return err
 	}
 
-	// Render sidebar OOB swap to update active highlight
-	lists, err := client.ListTaskLists()
-	if err != nil {
+	if listErr != nil {
 		return nil
 	}
 	return ViewTasklistSidebarOOB(lists, listID).Render(ctx, w)
@@ -91,7 +115,7 @@ func (h *Handlers) HandleCreateTask(c echo.Context) error {
 	if svc == nil {
 		return c.String(http.StatusBadRequest, "Not authenticated")
 	}
-	client := NewClient(svc)
+	client := h.newClient(c)
 	listID := c.Param("listId")
 	title := c.FormValue("title")
 
@@ -112,7 +136,7 @@ func (h *Handlers) HandleCreateSubtask(c echo.Context) error {
 	if svc == nil {
 		return c.String(http.StatusBadRequest, "Not authenticated")
 	}
-	client := NewClient(svc)
+	client := h.newClient(c)
 	listID := c.Param("listId")
 	parentID := c.Param("taskId")
 	title := c.FormValue("title")
@@ -131,8 +155,7 @@ func (h *Handlers) HandleCreateSubtask(c echo.Context) error {
 }
 
 func (h *Handlers) HandleUpdateTask(c echo.Context) error {
-	svc := auth.GetTasksClient(c)
-	client := NewClient(svc)
+	client := h.newClient(c)
 	listID := c.Param("listId")
 	taskID := c.Param("taskId")
 	listTitle := c.FormValue("listTitle")
@@ -175,25 +198,39 @@ func (h *Handlers) HandleUpdateTask(c echo.Context) error {
 }
 
 func (h *Handlers) HandleGetDetail(c echo.Context) error {
-	svc := auth.GetTasksClient(c)
-	client := NewClient(svc)
+	client := h.newClient(c)
 	listID := c.Param("listId")
 	taskID := c.Param("taskId")
 
-	task, err := client.GetTask(listID, taskID)
-	if err != nil {
+	// Fetch task and subtasks in parallel
+	var (
+		task     *Task
+		subtasks []Task
+		taskErr  error
+	)
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		task, taskErr = client.GetTask(listID, taskID)
+	}()
+	go func() {
+		defer wg.Done()
+		subtasks, _ = client.ListSubtasks(listID, taskID)
+	}()
+	wg.Wait()
+
+	if taskErr != nil {
 		return renderError(c, "Failed to load task")
 	}
 
-	subtasks, _ := client.ListSubtasks(listID, taskID)
 	task.Children = subtasks
 	task.ListTitle = c.QueryParam("listTitle")
 	return ViewTaskDetailPanel(listID, *task).Render(c.Request().Context(), c.Response())
 }
 
 func (h *Handlers) HandleDeleteTask(c echo.Context) error {
-	svc := auth.GetTasksClient(c)
-	client := NewClient(svc)
+	client := h.newClient(c)
 	listID := c.Param("listId")
 	taskID := c.Param("taskId")
 
@@ -209,12 +246,31 @@ func (h *Handlers) HandleDeleteTask(c echo.Context) error {
 }
 
 func (h *Handlers) HandleToday(c echo.Context) error {
-	svc := auth.GetTasksClient(c)
-	client := NewClient(svc)
+	client := h.newClient(c)
 	today := time.Now().Format("2006-01-02")
 
-	taskItems, err := client.ListTodayTasks(today)
-	if err != nil {
+	// Fetch today tasks and task lists in parallel.
+	// ListTodayTasks calls ListTaskLists internally, which will be cached
+	// for the second call below.
+	var (
+		taskItems []Task
+		lists     []TaskList
+		taskErr   error
+		listErr   error
+	)
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		taskItems, taskErr = client.ListTodayTasks(today)
+	}()
+	go func() {
+		defer wg.Done()
+		lists, listErr = client.ListTaskLists()
+	}()
+	wg.Wait()
+
+	if taskErr != nil {
 		return renderError(c, "Failed to load tasks")
 	}
 
@@ -225,17 +281,14 @@ func (h *Handlers) HandleToday(c echo.Context) error {
 		return err
 	}
 
-	// OOB sidebar update
-	lists, err := client.ListTaskLists()
-	if err != nil {
+	if listErr != nil {
 		return nil
 	}
 	return ViewTasklistSidebarOOB(lists, "_today").Render(ctx, w)
 }
 
 func (h *Handlers) HandleRescheduleTask(c echo.Context) error {
-	svc := auth.GetTasksClient(c)
-	client := NewClient(svc)
+	client := h.newClient(c)
 	listID := c.Param("listId")
 	taskID := c.Param("taskId")
 	due := c.FormValue("due")
@@ -269,8 +322,7 @@ func (h *Handlers) HandleRescheduleTask(c echo.Context) error {
 }
 
 func (h *Handlers) HandleMoveTask(c echo.Context) error {
-	svc := auth.GetTasksClient(c)
-	client := NewClient(svc)
+	client := h.newClient(c)
 	listID := c.Param("listId")
 	taskID := c.Param("taskId")
 	previousID := c.FormValue("previous")
@@ -284,8 +336,7 @@ func (h *Handlers) HandleMoveTask(c echo.Context) error {
 }
 
 func (h *Handlers) HandleToggleHideCompleted(c echo.Context) error {
-	svc := auth.GetTasksClient(c)
-	client := NewClient(svc)
+	client := h.newClient(c)
 	listID := c.FormValue("listId")
 	listTitle := c.FormValue("listTitle")
 

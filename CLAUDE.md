@@ -24,9 +24,11 @@ Tailwind CSS v4 uses CSS-based config (`@import "tailwindcss"` in `static/css/ap
 
 **Stack:** Go (Echo), templ templates, HTMX, Tailwind CSS, SQLite (pure Go via modernc.org/sqlite)
 
-**No JSON API.** All endpoints return HTML fragments. HTMX swaps them into the DOM. State-changing requests require an `X-Requested-With: XMLHttpRequest` header (set globally in `layout.templ`, enforced by `RequireXHR` middleware).
+**Two API layers:**
+- `/api/` — internal HTMX endpoints returning HTML fragments. Require session auth + `X-Requested-With: XMLHttpRequest` header (set globally in `layout.templ`, enforced by `RequireXHR` middleware).
+- `/api/v1/` — external JSON API for tools/extensions. Authenticated via API keys (`Authorization: Bearer tsk_...`). See `docs/api.md`.
 
-**No local task storage.** All task data comes from the Google Tasks API per request. SQLite only stores sessions (with encrypted OAuth tokens).
+**No local task storage.** All task data comes from the Google Tasks API per request. SQLite stores sessions (with encrypted OAuth tokens) and API keys (hashed).
 
 ### Import cycle workaround
 
@@ -59,9 +61,12 @@ Custom gorilla/sessions implementation backed by SQLite. OAuth tokens are AES-25
 - `cmd/server/main.go` — route registration, view function wiring
 - `internal/tasks/views.go` — view function variables (import cycle bridge)
 - `internal/tasks/handlers.go` — all task HTTP handlers, `renderOOB()` helper
-- `internal/tasks/client.go` — Google Tasks API wrapper, `Task`/`TaskList` types
-- `internal/auth/middleware.go` — auth middleware, injects Tasks client into context
+- `internal/tasks/client.go` — Google Tasks API wrapper with per-user caching, `Task`/`TaskList` types
+- `internal/auth/middleware.go` — session auth middleware, injects Tasks client into context
+- `internal/apikeys/` — API key generation, hashing, auth middleware, JSON handlers for `/api/v1/`
+- `internal/cache/cache.go` — in-memory TTL cache shared across handlers
 - `templates/` — `.templ` files (generate `_templ.go` via `templ generate`)
+- `docs/api.md` — external API documentation
 
 ## Conventions
 
