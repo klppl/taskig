@@ -255,6 +255,36 @@ func (c *Client) MoveTask(listID, taskID, previousID string) (*Task, error) {
 	return &t, nil
 }
 
+// MoveTaskToList moves a task from one list to another by creating it in the
+// destination list and deleting it from the source. Returns the new task.
+func (c *Client) MoveTaskToList(srcListID, taskID, dstListID string) (*Task, error) {
+	// Get the original task
+	src, err := c.svc.Tasks.Get(srcListID, taskID).Do()
+	if err != nil {
+		return nil, fmt.Errorf("get task for move: %w", err)
+	}
+	// Create in destination list
+	dst := &gtasks.Task{
+		Title: src.Title,
+		Notes: src.Notes,
+		Due:   src.Due,
+	}
+	if src.Status == "completed" {
+		dst.Status = "completed"
+	}
+	created, err := c.svc.Tasks.Insert(dstListID, dst).Do()
+	if err != nil {
+		return nil, fmt.Errorf("insert task in destination list: %w", err)
+	}
+	// Delete from source list
+	_ = c.svc.Tasks.Delete(srcListID, taskID).Do()
+	c.invalidateList(srcListID)
+	c.invalidateList(dstListID)
+	t := ToTask(created)
+	t.ListID = dstListID
+	return &t, nil
+}
+
 // DeleteTask deletes a task from the given list.
 func (c *Client) DeleteTask(listID, taskID string) error {
 	if err := c.svc.Tasks.Delete(listID, taskID).Do(); err != nil {

@@ -187,9 +187,10 @@ func (h *Handlers) HandleUpdateTask(c echo.Context) error {
 	}
 
 	task.ListTitle = listTitle
+	lists, _ := client.ListTaskLists()
 
 	// Render updated detail panel (primary response)
-	if err := ViewTaskDetailPanel(listID, *task).Render(ctx, w); err != nil {
+	if err := ViewTaskDetailPanel(listID, *task, lists).Render(ctx, w); err != nil {
 		return err
 	}
 
@@ -202,14 +203,16 @@ func (h *Handlers) HandleGetDetail(c echo.Context) error {
 	listID := c.Param("listId")
 	taskID := c.Param("taskId")
 
-	// Fetch task and subtasks in parallel
+	// Fetch task, subtasks, and task lists in parallel
 	var (
 		task     *Task
 		subtasks []Task
+		lists    []TaskList
 		taskErr  error
+		listErr  error
 	)
 	var wg sync.WaitGroup
-	wg.Add(2)
+	wg.Add(3)
 	go func() {
 		defer wg.Done()
 		task, taskErr = client.GetTask(listID, taskID)
@@ -218,15 +221,22 @@ func (h *Handlers) HandleGetDetail(c echo.Context) error {
 		defer wg.Done()
 		subtasks, _ = client.ListSubtasks(listID, taskID)
 	}()
+	go func() {
+		defer wg.Done()
+		lists, listErr = client.ListTaskLists()
+	}()
 	wg.Wait()
 
 	if taskErr != nil {
 		return renderError(c, "Failed to load task")
 	}
+	if listErr != nil {
+		lists = nil
+	}
 
 	task.Children = subtasks
 	task.ListTitle = c.QueryParam("listTitle")
-	return ViewTaskDetailPanel(listID, *task).Render(c.Request().Context(), c.Response())
+	return ViewTaskDetailPanel(listID, *task, lists).Render(c.Request().Context(), c.Response())
 }
 
 func (h *Handlers) HandleDeleteTask(c echo.Context) error {
@@ -242,6 +252,49 @@ func (h *Handlers) HandleDeleteTask(c echo.Context) error {
 	// plus OOB clear of the detail panel
 	ctx := c.Request().Context()
 	w := c.Response()
+	return renderOOB(ctx, w, "detail-panel", ViewTaskDetailEmpty())
+}
+
+func (h *Handlers) HandleMoveTaskToList(c echo.Context) error {
+	client := h.newClient(c)
+	srcListID := c.Param("listId")
+	taskID := c.Param("taskId")
+	dstListID := c.FormValue("destListId")
+
+	if dstListID == "" || dstListID == srcListID {
+		return c.String(http.StatusBadRequest, "Invalid destination list")
+	}
+
+	newTask, err := client.MoveTaskToList(srcListID, taskID, dstListID)
+	if err != nil {
+		return renderError(c, "Failed to move task")
+	}
+
+	// Fetch updated data in parallel: task lists + tasks for the new detail panel
+	var (
+		lists   []TaskList
+		listErr error
+	)
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		lists, listErr = client.ListTaskLists()
+	}()
+	wg.Wait()
+
+	ctx := c.Request().Context()
+	w := c.Response()
+
+	// Remove the old task item from the list
+	if _, err := w.Write([]byte(`<div id="task-` + taskID + `" hx-swap-oob="delete"></div>`)); err != nil {
+		return err
+	}
+
+	if listErr == nil {
+		// Re-render detail panel for the moved task in its new list
+		return renderOOB(ctx, w, "detail-panel", ViewTaskDetailPanel(dstListID, *newTask, lists))
+	}
 	return renderOOB(ctx, w, "detail-panel", ViewTaskDetailEmpty())
 }
 

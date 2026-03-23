@@ -207,7 +207,7 @@ templ TaskDetailEmpty() {
 	</div>
 }
 
-templ TaskDetailPanel(listID string, task tasks.Task) {
+templ TaskDetailPanel(listID string, task tasks.Task, taskLists []tasks.TaskList) {
 	<div class="flex h-full flex-col">
 		<div class="flex items-center justify-between border-b border-gray-200 px-5 py-3 dark:border-gray-800">
 			<h2 class="text-sm font-medium">{ i18n.T(ctx, "details") }</h2>
@@ -279,6 +279,24 @@ templ TaskDetailPanel(listID string, task tasks.Task) {
 						</button>
 					</div>
 				</div>
+			<!-- Move to list -->
+				if len(taskLists) > 1 {
+					<div>
+						<label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">{ i18n.T(ctx, "list") }</label>
+						<select
+							name="destListId"
+							hx-post={ "/api/tasklists/" + listID + "/tasks/" + task.ID + "/move-to-list" }
+							hx-target="#detail-panel"
+							hx-swap="innerHTML"
+							hx-trigger="change"
+							class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:focus:border-blue-400"
+						>
+							for _, list := range taskLists {
+								<option value={ list.ID } selected?={ list.ID == listID }>{ list.Title }</option>
+							}
+						</select>
+					</div>
+				}
 			<!-- Subtasks -->
 			if len(task.Children) > 0 {
 				<div>

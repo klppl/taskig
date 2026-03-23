@@ -115,6 +115,7 @@ func main() {
 	api.POST("/tasklists/:listId/tasks/:taskId/reschedule", taskHandlers.HandleRescheduleTask)
 	api.POST("/tasklists/:listId/tasks/:taskId/move", taskHandlers.HandleMoveTask)
 	api.POST("/tasklists/:listId/tasks/:taskId/subtasks", taskHandlers.HandleCreateSubtask)
+	api.POST("/tasklists/:listId/tasks/:taskId/move-to-list", taskHandlers.HandleMoveTaskToList)
 
 	// External JSON API (API key auth)
 	v1 := e.Group("/api/v1", apiKeyMiddleware.RequireAPIKey)

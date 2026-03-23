@@ -40,6 +40,7 @@
   "completed": "Completed",
   "active": "Active",
   "subtasks": "Subtasks",
+  "list": "List",
   "add_subtask": "Add subtask",
   "add_subtask_placeholder": "Add subtask...",
   "subtask_title_placeholder": "Subtask title...",

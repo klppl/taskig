@@ -40,6 +40,7 @@
   "completed": "Slutf\u00f6rd",
   "active": "Aktiv",
   "subtasks": "Underuppgifter",
+  "list": "Lista",
   "add_subtask": "L\u00e4gg till underuppgift",
   "add_subtask_placeholder": "L\u00e4gg till underuppgift...",
   "subtask_title_placeholder": "Underuppgiftstitel...",
