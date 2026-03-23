@@ -39,6 +39,7 @@ func main() {
 	tasks.ViewTaskItem = templates.TaskItem
 	tasks.ViewTaskDetailPanel = templates.TaskDetailPanel
 	tasks.ViewTaskDetailEmpty = templates.TaskDetailEmpty
+	tasks.ViewTasklistSidebar = templates.TasklistSidebar
 	tasks.ViewTasklistSidebarOOB = templates.TasklistSidebarOOB
 	tasks.ViewTodayContent = templates.TodayContent
 	tasks.ViewTaskTree = templates.TaskTree

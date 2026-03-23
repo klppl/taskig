@@ -10,6 +10,7 @@ var (
 	ViewTaskItem           func(listID string, task Task, inTodayView bool) templ.Component
 	ViewTaskDetailPanel    func(listID string, task Task, taskLists []TaskList) templ.Component
 	ViewTaskDetailEmpty    func() templ.Component
+	ViewTasklistSidebar    func(taskLists []TaskList, activeID string) templ.Component
 	ViewTasklistSidebarOOB func(taskLists []TaskList, activeID string) templ.Component
 	ViewTodayContent       func(taskItems []Task) templ.Component
 	ViewTaskTree           func(listID string, task Task, depth int) templ.Component

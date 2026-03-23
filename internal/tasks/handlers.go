@@ -489,7 +489,7 @@ func (h *Handlers) HandleCycleListColor(c echo.Context) error {
 	h.applyColors(email, lists)
 
 	activeListID := c.QueryParam("active")
-	return ViewTasklistSidebarOOB(lists, activeListID).Render(c.Request().Context(), c.Response())
+	return ViewTasklistSidebar(lists, activeListID).Render(c.Request().Context(), c.Response())
 }
 
 func readHideCompleted(c echo.Context) bool {
