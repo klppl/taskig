@@ -11,20 +11,30 @@ import (
 
 templ TaskListContent(listID string, listTitle string, taskItems []tasks.Task, hideCompleted bool) {
 	<div class="task-container px-4 py-6">
-		<div class="mb-5 flex items-center justify-between">
-			<h1 class="text-lg font-semibold tracking-tight">{ listTitle }</h1>
-			<button
-				hx-post="/api/preferences/hide-completed"
-				hx-target="#task-panel"
-				hx-vals={ hideCompletedVals(listID, listTitle) }
-				class="rounded-md px-2 py-1 text-xs text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
-			>
-				if hideCompleted {
-					{ i18n.T(ctx, "show_completed") }
-				} else {
-					{ i18n.T(ctx, "hide_completed") }
-				}
-			</button>
+		<!-- Header -->
+		<div class="mb-6">
+			<div class="flex items-center justify-between">
+				<div>
+					<div class="flex items-baseline gap-3">
+						<h1 class="text-xl font-semibold tracking-tight">{ listTitle }</h1>
+						if len(taskItems) > 0 {
+							<span class="text-sm text-gray-400 dark:text-gray-500">{ fmt.Sprintf("%d", len(taskItems)) } { i18n.T(ctx, "tasks_count") }</span>
+						}
+					</div>
+				</div>
+				<button
+					hx-post="/api/preferences/hide-completed"
+					hx-target="#task-panel"
+					hx-vals={ hideCompletedVals(listID, listTitle) }
+					class="rounded-md px-2 py-1 text-xs text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+				>
+					if hideCompleted {
+						{ i18n.T(ctx, "show_completed") }
+					} else {
+						{ i18n.T(ctx, "hide_completed") }
+					}
+				</button>
+			</div>
 		</div>
 		<!-- Task list -->
 		<div id="task-list" data-list-id={ listID } class="task-list">
@@ -59,6 +69,16 @@ templ TaskListContent(listID string, listTitle string, taskItems []tasks.Task, h
 				@TaskTree(listID, task, 0)
 			}
 		</div>
+		if len(taskItems) == 0 {
+			<div class="flex flex-col items-center justify-center py-12 text-center">
+				<div class="mb-3 rounded-full bg-gray-100 p-3 dark:bg-gray-800">
+					<svg class="h-6 w-6 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+					</svg>
+				</div>
+				<p class="text-sm text-gray-400 dark:text-gray-500">{ i18n.T(ctx, "no_tasks_in_list") }</p>
+			</div>
+		}
 		@sortableInit()
 	</div>
 }
