@@ -4,3 +4,4 @@ bin/
 data/
 /docs/superpowers
 /node_modules
+/.claude
