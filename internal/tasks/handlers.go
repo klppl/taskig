@@ -288,6 +288,7 @@ func (h *Handlers) HandleGetDetail(c echo.Context) error {
 
 	task.Children = subtasks
 	task.ListTitle = c.QueryParam("listTitle")
+	task.ListColor = h.colors.Get(auth.GetEmail(c), listID)
 	return ViewTaskDetailPanel(listID, *task, lists).Render(c.Request().Context(), c.Response())
 }
 

@@ -221,7 +221,7 @@ templ TaskDetailPanel(listID string, task tasks.Task, taskLists []tasks.TaskList
 				<h2 class="hidden text-sm font-medium md:block">{ i18n.T(ctx, "details") }</h2>
 			</div>
 			if task.ListTitle != "" {
-				<span class="text-xs text-gray-400">{ task.ListTitle }</span>
+				<span class={ "rounded px-1.5 py-0.5 text-[11px] font-medium", listcolor.BadgeClasses(task.ListColor) }>{ task.ListTitle }</span>
 			}
 		</div>
 		<form
