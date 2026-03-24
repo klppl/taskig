@@ -165,6 +165,10 @@ func TaskListContent(listID string, listTitle string, taskItems []tasks.Task, hi
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
+		templ_7745c5c3_Err = mobileTaskInit().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -201,7 +205,7 @@ func addTaskForm(listID string) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs("/api/tasklists/" + listID + "/tasks")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 70, Col: 49}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 71, Col: 49}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -214,7 +218,7 @@ func addTaskForm(listID string) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(ctx, "add_task_placeholder"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 83, Col: 53}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 84, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -227,7 +231,7 @@ func addTaskForm(listID string) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(ctx, "add"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 91, Col: 24}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 92, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -269,7 +273,7 @@ func listSections(listID string, taskItems []tasks.Task, hideCompleted bool) tem
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(ctx, "active_tasks"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 102, Col: 124}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 103, Col: 124}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -282,7 +286,7 @@ func listSections(listID string, taskItems []tasks.Task, hideCompleted bool) tem
 		var templ_7745c5c3_Var15 string
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", countActiveTasks(taskItems)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 103, Col: 106}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 104, Col: 106}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
@@ -295,7 +299,7 @@ func listSections(listID string, taskItems []tasks.Task, hideCompleted bool) tem
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(listID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 105, Col: 43}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 106, Col: 43}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {
@@ -329,7 +333,7 @@ func listSections(listID string, taskItems []tasks.Task, hideCompleted bool) tem
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(ctx, "completed_tasks"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 119, Col: 128}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 120, Col: 128}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
@@ -342,7 +346,7 @@ func listSections(listID string, taskItems []tasks.Task, hideCompleted bool) tem
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", countCompletedTasks(taskItems)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 120, Col: 110}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 121, Col: 110}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {
@@ -426,7 +430,7 @@ func TodayContent(taskItems []tasks.Task) templ.Component {
 		var templ_7745c5c3_Var20 string
 		templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(todayDateFormatted(ctx))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 177, Col: 120}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 178, Col: 120}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 		if templ_7745c5c3_Err != nil {
@@ -439,7 +443,7 @@ func TodayContent(taskItems []tasks.Task) templ.Component {
 		var templ_7745c5c3_Var21 string
 		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(ctx, "today"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 179, Col: 77}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 180, Col: 77}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {
@@ -457,7 +461,7 @@ func TodayContent(taskItems []tasks.Task) templ.Component {
 			var templ_7745c5c3_Var22 string
 			templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(taskItems)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 181, Col: 97}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 182, Col: 97}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 			if templ_7745c5c3_Err != nil {
@@ -470,7 +474,7 @@ func TodayContent(taskItems []tasks.Task) templ.Component {
 			var templ_7745c5c3_Var23 string
 			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(ctx, "tasks_count"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 181, Col: 128}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 182, Col: 128}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 			if templ_7745c5c3_Err != nil {
@@ -493,7 +497,7 @@ func TodayContent(taskItems []tasks.Task) templ.Component {
 			var templ_7745c5c3_Var24 string
 			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(ctx, "all_caught_up"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 194, Col: 98}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 195, Col: 98}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 			if templ_7745c5c3_Err != nil {
@@ -506,7 +510,7 @@ func TodayContent(taskItems []tasks.Task) templ.Component {
 			var templ_7745c5c3_Var25 string
 			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(ctx, "no_tasks_today"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 195, Col: 92}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 196, Col: 92}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 			if templ_7745c5c3_Err != nil {
@@ -521,6 +525,10 @@ func TodayContent(taskItems []tasks.Task) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
+		}
+		templ_7745c5c3_Err = mobileTaskInit().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "</div>")
 		if templ_7745c5c3_Err != nil {
@@ -563,7 +571,7 @@ func todaySections(taskItems []tasks.Task) templ.Component {
 			var templ_7745c5c3_Var27 string
 			templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(ctx, "overdue"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 209, Col: 118}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 211, Col: 118}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 			if templ_7745c5c3_Err != nil {
@@ -576,7 +584,7 @@ func todaySections(taskItems []tasks.Task) templ.Component {
 			var templ_7745c5c3_Var28 string
 			templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", countOverdue(taskItems)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 210, Col: 101}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 212, Col: 101}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 			if templ_7745c5c3_Err != nil {
@@ -611,7 +619,7 @@ func todaySections(taskItems []tasks.Task) templ.Component {
 			var templ_7745c5c3_Var29 string
 			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(ctx, "due_today"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 227, Col: 122}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 229, Col: 122}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 			if templ_7745c5c3_Err != nil {
@@ -624,7 +632,7 @@ func todaySections(taskItems []tasks.Task) templ.Component {
 			var templ_7745c5c3_Var30 string
 			templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", countToday(taskItems)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 228, Col: 101}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/task_list.templ`, Line: 230, Col: 101}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 			if templ_7745c5c3_Err != nil {
@@ -726,6 +734,35 @@ func sortableInit() templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "<script>\n\t\t(function() {\n\t\t\tconst list = document.getElementById('task-list');\n\t\t\tif (!list || !list.dataset.listId) return;\n\t\t\tif (list._sortable) list._sortable.destroy();\n\t\t\tlist._sortable = Sortable.create(list, {\n\t\t\t\tanimation: 150,\n\t\t\t\tghostClass: 'opacity-30',\n\t\t\t\tfilter: '.group\\\\/form',\n\t\t\t\tpreventOnFilter: false,\n\t\t\t\tdelay: 150,\n\t\t\t\tdelayOnTouchOnly: true,\n\t\t\t\tonEnd: function(evt) {\n\t\t\t\t\tif (evt.oldIndex === evt.newIndex) return;\n\t\t\t\t\tconst item = evt.item;\n\t\t\t\t\tconst taskId = item.dataset.taskId;\n\t\t\t\t\tconst listId = list.dataset.listId;\n\t\t\t\t\tconst prev = item.previousElementSibling;\n\t\t\t\t\tconst previousId = (prev && prev.dataset.taskId) || '';\n\t\t\t\t\tfetch('/api/tasklists/' + listId + '/tasks/' + taskId + '/move', {\n\t\t\t\t\t\tmethod: 'POST',\n\t\t\t\t\t\theaders: {\n\t\t\t\t\t\t\t'Content-Type': 'application/x-www-form-urlencoded',\n\t\t\t\t\t\t\t'X-Requested-With': 'XMLHttpRequest'\n\t\t\t\t\t\t},\n\t\t\t\t\t\tbody: 'previous=' + encodeURIComponent(previousId)\n\t\t\t\t\t}).catch(function() { location.reload(); });\n\t\t\t\t}\n\t\t\t});\n\t\t})();\n\t</script>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func mobileTaskInit() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var32 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var32 == nil {
+			templ_7745c5c3_Var32 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<script>\n\t\t(function() {\n\t\t\tif (window.innerWidth >= 768) return;\n\t\t\tdocument.querySelectorAll('.task-item[hx-target=\"#detail-panel\"]').forEach(function(el) {\n\t\t\t\tvar lid = el.getAttribute('data-list-id');\n\t\t\t\tvar tid = el.getAttribute('data-task-id');\n\t\t\t\tvar lt = el.getAttribute('data-list-title');\n\t\t\t\tvar qs = lt ? '?listTitle=' + encodeURIComponent(lt) + '&mobile=1' : '?mobile=1';\n\t\t\t\tel.setAttribute('hx-get', '/api/tasklists/' + lid + '/tasks/' + tid + '/detail' + qs);\n\t\t\t\tel.setAttribute('hx-target', '#task-panel');\n\t\t\t});\n\t\t\thtmx.process(document.getElementById('task-panel'));\n\t\t})();\n\t</script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

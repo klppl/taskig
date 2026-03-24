@@ -22,6 +22,7 @@
   "add_task_placeholder": "Add a task...",
   "add": "Add",
   "save": "Save",
+  "back": "Back",
   "delete": "Delete",
   "delete_task_confirm": "Delete this task?",
   "show_completed": "Show completed",
