@@ -27,77 +27,79 @@ group: { name: 'tasks', pull: 'clone', put: false }
 
 Using `pull: 'clone'` so SortableJS doesn't remove the DOM element itself — the server response handles removal via OOB swap.
 
-Each sidebar list item (except Today and the active list) gets a minimal Sortable instance configured as a drop zone:
+Each sidebar list item (except Today and the active list) gets a minimal Sortable instance configured as a drop zone. Sidebar items are `<button>` elements — SortableJS can use them as containers for receiving drops.
 
 ```js
 Sortable.create(sidebarItem, {
   group: { name: 'tasks', pull: false, put: true },
-  onAdd: function(evt) { /* trigger move-to-list */ }
+  onAdd: function(evt) {
+    evt.item.remove(); // Remove cloned task element from sidebar button immediately
+    // ... trigger move-to-list request
+  }
 });
 ```
+
+### Sidebar Drop Zone Re-initialization
+
+Sidebar contents are replaced via OOB swap on every list navigation (`TasklistSidebarOOB`). This destroys any Sortable instances on sidebar items. The `sortableInit()` script in `task_list.templ` already runs on every list load — sidebar drop zone setup is included there, so it re-initializes after each OOB sidebar swap in the same response.
 
 ### Visual Feedback
 
 On `onStart` (drag begins):
 - Add `drag-active` class to `#tasklist-sidebar`
 - Each sidebar list item that is a valid target gets `drop-target` class
-- Current list and Today get `drop-disabled` class
+- Current list and Today button get `drop-disabled` class
+- Today button identified via `data-list-id="_today"` attribute
 
 On `onEnd` (drag ends, regardless of outcome):
 - Remove all `drag-active`, `drop-target`, `drop-disabled` classes
 
-CSS classes (added to Tailwind):
-- `.drop-target`: `ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-900/20`
-- `.drop-disabled`: `opacity-40 pointer-events-none`
+CSS classes (raw CSS in `app.css`, not Tailwind utilities, since these classes are only added via JS and wouldn't be picked up by Tailwind's scanner):
+
+```css
+.drop-target {
+  outline: 2px solid #60a5fa; /* blue-400 */
+  background: rgba(59, 130, 246, 0.08);
+}
+.dark .drop-target {
+  background: rgba(59, 130, 246, 0.15);
+}
+.drop-disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+```
 
 ### Move Request
 
-On `onAdd` in a sidebar drop zone:
-```js
-fetch('/api/tasklists/' + srcListId + '/tasks/' + taskId + '/move-to-list', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'X-Requested-With': 'XMLHttpRequest'
-  },
-  body: 'destListId=' + encodeURIComponent(destListId)
-})
-```
-
-The response uses HTMX OOB swaps to delete the task element and update the detail panel. Since we're using `fetch` (not HTMX), we process the response by injecting the HTML into the DOM to trigger OOB swap processing via `htmx.process()`.
-
-### Alternative: HTMX-driven approach
-
-Instead of raw `fetch`, we can trigger an HTMX request programmatically to let HTMX handle OOB swaps natively:
+Use `htmx.ajax()` so HTMX handles OOB swaps natively. The handler response contains only OOB fragments (a delete swap for the task element and an innerHTML swap for the detail panel), so we use `swap: 'none'` to avoid any primary swap — OOB processing handles everything:
 
 ```js
 htmx.ajax('POST', '/api/tasklists/' + srcListId + '/tasks/' + taskId + '/move-to-list', {
-  target: '#task-' + taskId,
-  swap: 'delete',
+  swap: 'none',
   values: { destListId: destListId },
   headers: { 'X-Requested-With': 'XMLHttpRequest' }
-})
+}).catch(function() { location.reload(); });
 ```
-
-This is preferred since the existing handler response already uses OOB swaps that HTMX processes automatically.
 
 ## Scope Boundaries
 
 - **Desktop only.** On mobile the sidebar is hidden; users use the existing dropdown in the detail panel.
 - **Single-list views only.** Disabled in Today view (no Sortable group config applied when in Today).
-- **Subtasks move automatically.** Already handled by `MoveTaskToList` in `client.go`.
+- **Only top-level tasks are draggable.** Subtasks are nested inside parent divs and are not direct children of `#task-list`, so SortableJS won't pick them up independently. When a parent is dragged, its subtasks move with it (handled by `MoveTaskToList`).
+- **Completed tasks are not draggable.** The completed section is a separate container outside `#task-list`.
 - **No new backend endpoints.** Reuses `HandleMoveTaskToList`.
 - **No changes to within-list reordering.** Existing drag-to-reorder continues to work.
 
 ## Error Handling
 
-- On move failure: reload the page (matches existing pattern in the Sortable `onEnd` handler).
-- Remove cloned element from sidebar on completion (SortableJS clone artifact).
+- On move failure: reload the page (via `.catch()` on the `htmx.ajax()` promise, matches existing pattern).
+- Clone cleanup: `evt.item.remove()` in `onAdd` before triggering the request, preventing stale cloned elements in the sidebar.
 
 ## Files to Modify
 
 | File | Change |
 |------|--------|
-| `templates/task_list.templ` | Extend Sortable init: add `group` option, drag start/end callbacks for sidebar highlighting |
-| `templates/tasklist_sidebar.templ` | Add `data-list-id` attributes to sidebar list items for drop zone identification |
-| `static/css/app.css` | Add `.drop-target` and `.drop-disabled` utility classes |
+| `templates/task_list.templ` | Extend `sortableInit()`: add `group` option, `onStart`/`onEnd` callbacks for sidebar highlighting, sidebar drop zone initialization |
+| `templates/tasklist_sidebar.templ` | Add `data-list-id` attributes to sidebar list items and `data-list-id="_today"` to the Today button |
+| `static/css/app.css` | Add `.drop-target` and `.drop-disabled` CSS classes (raw CSS, not Tailwind utilities) |
