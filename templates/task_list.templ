@@ -298,6 +298,8 @@ templ sortableInit() {
 				ghostClass: 'opacity-30',
 				filter: '.group\\/form',
 				preventOnFilter: false,
+				delay: 150,
+				delayOnTouchOnly: true,
 				onEnd: function(evt) {
 					if (evt.oldIndex === evt.newIndex) return;
 					const item = evt.item;
