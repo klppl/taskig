@@ -14,12 +14,23 @@ templ TaskListContent(listID string, listTitle string, taskItems []tasks.Task, h
 		<!-- Header -->
 		<div class="mb-6">
 			<div class="flex items-center justify-between">
-				<div>
-					<div class="flex items-baseline gap-3">
-						<h1 class="text-xl font-semibold tracking-tight">{ listTitle }</h1>
-						if len(taskItems) > 0 {
-							<span class="text-sm text-gray-400 dark:text-gray-500">{ fmt.Sprintf("%d", len(taskItems)) } { i18n.T(ctx, "tasks_count") }</span>
-						}
+				<div class="flex items-center gap-2">
+					<button
+						type="button"
+						onclick="openSidebar()"
+						class="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 md:hidden"
+					>
+						<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+						</svg>
+					</button>
+					<div>
+						<div class="flex items-baseline gap-3">
+							<h1 class="text-xl font-semibold tracking-tight">{ listTitle }</h1>
+							if len(taskItems) > 0 {
+								<span class="text-sm text-gray-400 dark:text-gray-500">{ fmt.Sprintf("%d", len(taskItems)) } { i18n.T(ctx, "tasks_count") }</span>
+							}
+						</div>
 					</div>
 				</div>
 				<button
@@ -152,12 +163,25 @@ templ TodayContent(taskItems []tasks.Task) {
 	<div class="task-container px-4 py-6">
 		<!-- Header -->
 		<div class="mb-6">
-			<p class="text-xs font-medium uppercase tracking-widest text-gray-400 dark:text-gray-500">{ todayDateFormatted(ctx) }</p>
-			<div class="mt-1 flex items-baseline gap-3">
-				<h1 class="text-xl font-semibold tracking-tight">{ i18n.T(ctx, "today") }</h1>
-				if len(taskItems) > 0 {
-					<span class="text-sm text-gray-400 dark:text-gray-500">{ fmt.Sprintf("%d", len(taskItems)) } { i18n.T(ctx, "tasks_count") }</span>
-				}
+			<div class="flex items-center gap-2">
+				<button
+					type="button"
+					onclick="openSidebar()"
+					class="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 md:hidden"
+				>
+					<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+					</svg>
+				</button>
+				<div>
+					<p class="text-xs font-medium uppercase tracking-widest text-gray-400 dark:text-gray-500">{ todayDateFormatted(ctx) }</p>
+					<div class="mt-1 flex items-baseline gap-3">
+						<h1 class="text-xl font-semibold tracking-tight">{ i18n.T(ctx, "today") }</h1>
+						if len(taskItems) > 0 {
+							<span class="text-sm text-gray-400 dark:text-gray-500">{ fmt.Sprintf("%d", len(taskItems)) } { i18n.T(ctx, "tasks_count") }</span>
+						}
+					</div>
+				</div>
 			</div>
 		</div>
 		if len(taskItems) == 0 {
