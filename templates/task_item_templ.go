@@ -116,7 +116,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" hx-target=\"#detail-panel\" hx-swap=\"innerHTML\" hx-on::config-request=\"if(window.innerWidth<768){var el=this;var lid=el.getAttribute('data-list-id');var tid=el.getAttribute('data-task-id');var lt=el.getAttribute('data-list-title');var qs=lt?'?listTitle='+encodeURIComponent(lt)+'&mobile=1':'?mobile=1';event.detail.path='/api/tasklists/'+lid+'/tasks/'+tid+'/detail'+qs;event.detail.target=document.getElementById('task-panel');history.pushState({},'','/dashboard?list='+lid+'&task='+tid)}\" hx-on:click=\"document.querySelectorAll('[data-task-selected]').forEach(el => { el.removeAttribute('data-task-selected'); el.classList.remove('bg-blue-50', 'dark:bg-blue-900/20'); }); this.setAttribute('data-task-selected', ''); this.classList.add('bg-blue-50', 'dark:bg-blue-900/20');\" class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" hx-target=\"#detail-panel\" hx-swap=\"innerHTML\" hx-on::config-request=\"if(window.innerWidth<768){var el=this;var lid=el.getAttribute('data-list-id');var tid=el.getAttribute('data-task-id');var lt=el.getAttribute('data-list-title');var qs=lt?'?listTitle='+encodeURIComponent(lt)+'&mobile=1':'?mobile=1';event.detail.path='/api/tasklists/'+lid+'/tasks/'+tid+'/detail'+qs;event.detail.target=document.getElementById('task-panel');var backList=lt?'_today':lid;history.pushState({},'','/dashboard?list='+backList+'&task='+tid)}\" hx-on:click=\"document.querySelectorAll('[data-task-selected]').forEach(el => { el.removeAttribute('data-task-selected'); el.classList.remove('bg-blue-50', 'dark:bg-blue-900/20'); }); this.setAttribute('data-task-selected', ''); this.classList.add('bg-blue-50', 'dark:bg-blue-900/20');\" class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -173,7 +173,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 		}
 		if task.Due != "" {
 			if inTodayView {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"flex flex-shrink-0 items-center gap-1\" onclick=\"event.stopPropagation()\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"flex flex-shrink-0 items-center gap-1\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -234,7 +234,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\" class=\"hidden items-center gap-1\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\" class=\"hidden items-center gap-1\" onclick=\"event.stopPropagation()\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

@@ -24,7 +24,7 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 		hx-get={ "/api/tasklists/" + listID + "/tasks/" + task.ID + "/detail" + listTitleQS(task.ListTitle) }
 		hx-target="#detail-panel"
 		hx-swap="innerHTML"
-		hx-on::config-request="if(window.innerWidth<768){var el=this;var lid=el.getAttribute('data-list-id');var tid=el.getAttribute('data-task-id');var lt=el.getAttribute('data-list-title');var qs=lt?'?listTitle='+encodeURIComponent(lt)+'&mobile=1':'?mobile=1';event.detail.path='/api/tasklists/'+lid+'/tasks/'+tid+'/detail'+qs;event.detail.target=document.getElementById('task-panel');history.pushState({},'','/dashboard?list='+lid+'&task='+tid)}"
+		hx-on::config-request="if(window.innerWidth<768){var el=this;var lid=el.getAttribute('data-list-id');var tid=el.getAttribute('data-task-id');var lt=el.getAttribute('data-list-title');var qs=lt?'?listTitle='+encodeURIComponent(lt)+'&mobile=1':'?mobile=1';event.detail.path='/api/tasklists/'+lid+'/tasks/'+tid+'/detail'+qs;event.detail.target=document.getElementById('task-panel');var backList=lt?'_today':lid;history.pushState({},'','/dashboard?list='+backList+'&task='+tid)}"
 		hx-on:click="document.querySelectorAll('[data-task-selected]').forEach(el => { el.removeAttribute('data-task-selected'); el.classList.remove('bg-blue-50', 'dark:bg-blue-900/20'); }); this.setAttribute('data-task-selected', ''); this.classList.add('bg-blue-50', 'dark:bg-blue-900/20');"
 		class={
 			"task-item group flex cursor-pointer items-center gap-2 border-b border-gray-100 px-3 py-3 md:py-2.5 transition-colors hover:bg-gray-50 dark:border-gray-800/50 dark:hover:bg-gray-800/30",
@@ -48,7 +48,7 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 		<!-- Due date (leftmost, before checkbox) -->
 		if task.Due != "" {
 			if inTodayView {
-				<div class="flex flex-shrink-0 items-center gap-1" onclick="event.stopPropagation()">
+				<div class="flex flex-shrink-0 items-center gap-1">
 					<span
 						onclick={ toggleReschedule(task.ID) }
 						class={ "meta-text flex cursor-pointer items-center gap-1 whitespace-nowrap rounded-md px-1.5 py-0.5 text-[11px] font-medium transition hover:ring-2 hover:ring-gray-300 dark:hover:ring-gray-600", dueDateBadgeClass(task.Due, task.Completed) }
@@ -58,7 +58,7 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 						</svg>
 						{ formatDue(task.Due) }
 					</span>
-					<div id={ "resched-" + task.ID } class="hidden items-center gap-1">
+					<div id={ "resched-" + task.ID } class="hidden items-center gap-1" onclick="event.stopPropagation()">
 						if isOverdue(task.Due) {
 							<button
 								hx-post={ "/api/tasklists/" + listID + "/tasks/" + task.ID + "/reschedule" }
