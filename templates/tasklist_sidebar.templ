@@ -8,12 +8,13 @@ import (
 
 templ TasklistSidebar(lists []tasks.TaskList, activeID string) {
 	<button
+		data-list-id="_today"
 		hx-get="/api/today"
 		hx-target="#task-panel"
 		hx-push-url="/dashboard?list=_today"
 		onclick="closeSidebar()"
 		class={
-			"sidebar-item mb-2 flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition",
+			"sidebar-item mb-1 flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium transition",
 			templ.KV("bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300", activeID == "_today"),
 			templ.KV("text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800/50", activeID != "_today"),
 		}
@@ -25,27 +26,27 @@ templ TasklistSidebar(lists []tasks.TaskList, activeID string) {
 	</button>
 	<div class="mb-1 border-b border-gray-200 dark:border-gray-700"></div>
 	for _, list := range lists {
-		<div class="flex items-center">
+		<button
+			data-list-id={ list.ID }
+			hx-get={ "/api/tasklists/" + list.ID + "/tasks?title=" + list.Title }
+			hx-target="#task-panel"
+			hx-push-url={ "/dashboard?list=" + list.ID }
+			onclick="closeSidebar()"
+			class={
+				"sidebar-item group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition",
+				templ.KV("bg-gray-100 font-medium text-gray-900 dark:bg-gray-800 dark:text-gray-100", list.ID == activeID),
+				templ.KV("text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800/50", list.ID != activeID),
+			}
+		>
 			<span
 				hx-post={ "/api/tasklists/" + list.ID + "/color?active=" + activeID }
 				hx-target="#tasklist-sidebar"
 				hx-swap="innerHTML"
-				class={ "ml-3 inline-block h-2.5 w-2.5 flex-shrink-0 cursor-pointer rounded-full transition-transform hover:scale-150", listcolor.DotClass(list.Color) }
+				onclick="event.stopPropagation()"
+				class={ "inline-block h-2.5 w-2.5 flex-shrink-0 rounded-full transition-transform hover:scale-150", listcolor.DotClass(list.Color) }
 			></span>
-			<button
-				hx-get={ "/api/tasklists/" + list.ID + "/tasks?title=" + list.Title }
-				hx-target="#task-panel"
-				hx-push-url={ "/dashboard?list=" + list.ID }
-				onclick="closeSidebar()"
-				class={
-					"sidebar-item flex-1 rounded-md px-2 py-2 text-left text-sm transition",
-					templ.KV("bg-gray-100 font-medium dark:bg-gray-800", list.ID == activeID),
-					templ.KV("hover:bg-gray-50 dark:hover:bg-gray-800/50", list.ID != activeID),
-				}
-			>
-				{ list.Title }
-			</button>
-		</div>
+			<span class="truncate">{ list.Title }</span>
+		</button>
 	}
 }
 
