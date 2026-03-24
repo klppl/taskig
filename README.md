@@ -4,6 +4,8 @@ Self-hosted Google Tasks web client. Single-user, full-screen interface with thr
 
 **Stack:** Go, HTMX, Tailwind CSS, SQLite, templ
 
+![Screenshot](screenshot.png)
+
 ## Features
 
 - Google OAuth2 sign-in with email whitelist
