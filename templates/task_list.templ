@@ -272,7 +272,8 @@ templ sortableInit() {
 			list._sortable = Sortable.create(list, {
 				animation: 150,
 				ghostClass: 'opacity-30',
-				handle: '.drag-handle',
+				filter: '.group\\/form',
+				preventOnFilter: false,
 				onEnd: function(evt) {
 					if (evt.oldIndex === evt.newIndex) return;
 					const item = evt.item;
