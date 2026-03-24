@@ -78,3 +78,21 @@
 .density-comfortable .meta-text {
   font-size: 0.875rem;
 }
+
+/* === Cross-List Drag Drop Zones === */
+
+.drop-target {
+  outline: 2px solid #60a5fa;
+  outline-offset: -2px;
+  background: rgba(59, 130, 246, 0.08);
+  border-radius: 0.5rem;
+}
+
+.dark .drop-target {
+  background: rgba(59, 130, 246, 0.15);
+}
+
+.drop-disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
