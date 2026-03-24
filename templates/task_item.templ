@@ -19,9 +19,12 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 	<div
 		id={ "task-" + task.ID }
 		data-task-id={ task.ID }
+		data-list-id={ listID }
+		data-list-title={ task.ListTitle }
 		hx-get={ "/api/tasklists/" + listID + "/tasks/" + task.ID + "/detail" + listTitleQS(task.ListTitle) }
 		hx-target="#detail-panel"
 		hx-swap="innerHTML"
+		hx-on::config-request="if(window.innerWidth<768){var el=this;var lid=el.getAttribute('data-list-id');var tid=el.getAttribute('data-task-id');var lt=el.getAttribute('data-list-title');var qs=lt?'?listTitle='+encodeURIComponent(lt)+'&mobile=1':'?mobile=1';event.detail.path='/api/tasklists/'+lid+'/tasks/'+tid+'/detail'+qs;event.detail.target=document.getElementById('task-panel');history.pushState({},'','/dashboard?list='+lid+'&task='+tid)}"
 		hx-on:click="document.querySelectorAll('[data-task-selected]').forEach(el => { el.removeAttribute('data-task-selected'); el.classList.remove('bg-blue-50', 'dark:bg-blue-900/20'); }); this.setAttribute('data-task-selected', ''); this.classList.add('bg-blue-50', 'dark:bg-blue-900/20');"
 		class={
 			"task-item group flex cursor-pointer items-center gap-2 border-b border-gray-100 px-3 py-2.5 transition-colors hover:bg-gray-50 dark:border-gray-800/50 dark:hover:bg-gray-800/30",
@@ -207,7 +210,18 @@ templ TaskDetailEmpty() {
 templ TaskDetailPanel(listID string, task tasks.Task, taskLists []tasks.TaskList) {
 	<div class="flex h-full flex-col">
 		<div class="flex items-center justify-between border-b border-gray-200 px-5 py-3 dark:border-gray-800">
-			<h2 class="text-sm font-medium">{ i18n.T(ctx, "details") }</h2>
+			<div class="flex items-center gap-2">
+				<button
+					type="button"
+					onclick="history.back()"
+					class="rounded-lg p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300 md:hidden"
+				>
+					<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+					</svg>
+				</button>
+				<h2 class="text-sm font-medium">{ i18n.T(ctx, "details") }</h2>
+			</div>
 			if task.ListTitle != "" {
 				<span class="text-xs text-gray-400">{ task.ListTitle }</span>
 			}
@@ -403,6 +417,13 @@ func listTitleQS(listTitle string) string {
 		return ""
 	}
 	return "?listTitle=" + url.QueryEscape(listTitle)
+}
+
+func mobileDetailQS(listTitle string) string {
+	if listTitle != "" {
+		return "?listTitle=" + url.QueryEscape(listTitle) + "&mobile=1"
+	}
+	return "?mobile=1"
 }
 
 script toggleChildren(taskID string) {
