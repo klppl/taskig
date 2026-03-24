@@ -83,6 +83,8 @@ func main() {
 
 	// Static files
 	e.Static("/static", "static")
+	e.File("/sw.js", "static/sw.js")
+	e.File("/manifest.json", "static/manifest.json")
 
 	// Public routes (with i18n for translated UI)
 	public := e.Group("", i18n.Middleware())
