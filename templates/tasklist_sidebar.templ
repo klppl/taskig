@@ -11,6 +11,7 @@ templ TasklistSidebar(lists []tasks.TaskList, activeID string) {
 		hx-get="/api/today"
 		hx-target="#task-panel"
 		hx-push-url="/dashboard?list=_today"
+		onclick="closeSidebar()"
 		class={
 			"sidebar-item mb-2 flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition",
 			templ.KV("bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300", activeID == "_today"),
@@ -35,6 +36,7 @@ templ TasklistSidebar(lists []tasks.TaskList, activeID string) {
 				hx-get={ "/api/tasklists/" + list.ID + "/tasks?title=" + list.Title }
 				hx-target="#task-panel"
 				hx-push-url={ "/dashboard?list=" + list.ID }
+				onclick="closeSidebar()"
 				class={
 					"sidebar-item flex-1 rounded-md px-2 py-2 text-left text-sm transition",
 					templ.KV("bg-gray-100 font-medium dark:bg-gray-800", list.ID == activeID),

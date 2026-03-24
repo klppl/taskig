@@ -49,7 +49,7 @@ func DashboardPage(taskLists []tasks.TaskList, activeListID string, activeTasks 
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex h-full\"><!-- Sidebar --><aside id=\"sidebar\" class=\"hidden w-56 flex-shrink-0 border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 md:block\"><div class=\"flex h-full flex-col\"><div class=\"border-b border-gray-200 px-4 py-4 dark:border-gray-800\"><h2 hx-get=\"/api/today\" hx-target=\"#task-panel\" hx-push-url=\"/dashboard?list=_today\" class=\"flex cursor-pointer items-center gap-2 transition-opacity hover:opacity-80\"><div class=\"flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 shadow-sm\"><svg class=\"h-4 w-4 text-white\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2.5\" d=\"M5 13l4 4L19 7\"></path></svg></div><span class=\"text-base font-bold tracking-tight\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex h-full\"><!-- Sidebar --><aside id=\"sidebar\" class=\"fixed inset-y-0 left-0 z-40 w-72 -translate-x-full border-r border-gray-200 bg-white transition-transform duration-150 ease-in-out dark:border-gray-800 dark:bg-gray-900 md:static md:z-auto md:w-56 md:translate-x-0\"><div class=\"flex h-full flex-col\"><div class=\"border-b border-gray-200 px-4 py-4 dark:border-gray-800\"><h2 hx-get=\"/api/today\" hx-target=\"#task-panel\" hx-push-url=\"/dashboard?list=_today\" class=\"flex cursor-pointer items-center gap-2 transition-opacity hover:opacity-80\"><div class=\"flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 shadow-sm\"><svg class=\"h-4 w-4 text-white\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2.5\" d=\"M5 13l4 4L19 7\"></path></svg></div><span class=\"text-base font-bold tracking-tight\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -126,7 +126,7 @@ func DashboardPage(taskLists []tasks.TaskList, activeListID string, activeTasks 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</button></form></div></div></aside><!-- Mobile hamburger --><button class=\"fixed left-4 top-4 z-50 rounded-lg bg-white p-2 shadow-md dark:bg-gray-800 md:hidden\" onclick=\"document.getElementById('sidebar').classList.toggle('hidden'); document.getElementById('sidebar').classList.toggle('fixed'); document.getElementById('sidebar').classList.toggle('inset-y-0'); document.getElementById('sidebar').classList.toggle('left-0'); document.getElementById('sidebar').classList.toggle('z-40');\"><svg class=\"h-5 w-5\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M4 6h16M4 12h16M4 18h16\"></path></svg></button><!-- Task list --><main id=\"task-panel\" class=\"flex-1 overflow-y-auto\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</button></form></div></div></aside><!-- Sidebar backdrop --><div id=\"sidebar-backdrop\" class=\"fixed inset-0 z-30 hidden bg-black/30 md:hidden\" onclick=\"closeSidebar()\"></div><!-- Task list --><main id=\"task-panel\" class=\"flex-1 overflow-y-auto\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -148,7 +148,7 @@ func DashboardPage(taskLists []tasks.TaskList, activeListID string, activeTasks 
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(ctx, "select_task_list"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/dashboard.templ`, Line: 88, Col: 39}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/dashboard.templ`, Line: 85, Col: 39}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -167,7 +167,7 @@ func DashboardPage(taskLists []tasks.TaskList, activeListID string, activeTasks 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</aside></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</aside></div><script>\n\t\t\tfunction openSidebar() {\n\t\t\t\tdocument.getElementById('sidebar').classList.remove('-translate-x-full');\n\t\t\t\tdocument.getElementById('sidebar-backdrop').classList.remove('hidden');\n\t\t\t}\n\t\t\tfunction closeSidebar() {\n\t\t\t\tdocument.getElementById('sidebar').classList.add('-translate-x-full');\n\t\t\t\tdocument.getElementById('sidebar-backdrop').classList.add('hidden');\n\t\t\t}\n\t\t</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

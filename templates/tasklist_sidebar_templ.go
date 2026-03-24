@@ -43,7 +43,7 @@ func TasklistSidebar(lists []tasks.TaskList, activeID string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<button hx-get=\"/api/today\" hx-target=\"#task-panel\" hx-push-url=\"/dashboard?list=_today\" class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<button hx-get=\"/api/today\" hx-target=\"#task-panel\" hx-push-url=\"/dashboard?list=_today\" onclick=\"closeSidebar()\" class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -85,7 +85,7 @@ func TasklistSidebar(lists []tasks.TaskList, activeID string) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(ctx, "today"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/tasklist_sidebar.templ`, Line: 23, Col: 24}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/tasklist_sidebar.templ`, Line: 24, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -112,7 +112,7 @@ func TasklistSidebar(lists []tasks.TaskList, activeID string) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("/api/tasklists/" + list.ID + "/color?active=" + activeID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/tasklist_sidebar.templ`, Line: 29, Col: 71}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/tasklist_sidebar.templ`, Line: 30, Col: 71}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -150,7 +150,7 @@ func TasklistSidebar(lists []tasks.TaskList, activeID string) templ.Component {
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs("/api/tasklists/" + list.ID + "/tasks?title=" + list.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/tasklist_sidebar.templ`, Line: 35, Col: 71}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/tasklist_sidebar.templ`, Line: 36, Col: 71}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -163,13 +163,13 @@ func TasklistSidebar(lists []tasks.TaskList, activeID string) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs("/dashboard?list=" + list.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/tasklist_sidebar.templ`, Line: 37, Col: 46}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/tasklist_sidebar.templ`, Line: 38, Col: 46}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" class=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" onclick=\"closeSidebar()\" class=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -189,7 +189,7 @@ func TasklistSidebar(lists []tasks.TaskList, activeID string) templ.Component {
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(list.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/tasklist_sidebar.templ`, Line: 44, Col: 16}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/tasklist_sidebar.templ`, Line: 46, Col: 16}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
