@@ -116,7 +116,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" hx-target=\"#detail-panel\" hx-swap=\"innerHTML\" hx-on::config-request=\"if(window.innerWidth<768){var el=this;var lid=el.getAttribute('data-list-id');var tid=el.getAttribute('data-task-id');var lt=el.getAttribute('data-list-title');var qs=lt?'?listTitle='+encodeURIComponent(lt)+'&mobile=1':'?mobile=1';event.detail.path='/api/tasklists/'+lid+'/tasks/'+tid+'/detail'+qs;event.detail.target=document.getElementById('task-panel');var backList=lt?'_today':lid;history.pushState({},'','/dashboard?list='+backList+'&task='+tid)}\" hx-on:click=\"document.querySelectorAll('[data-task-selected]').forEach(el => { el.removeAttribute('data-task-selected'); el.classList.remove('bg-blue-50', 'dark:bg-blue-900/20'); }); this.setAttribute('data-task-selected', ''); this.classList.add('bg-blue-50', 'dark:bg-blue-900/20');\" class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" hx-target=\"#detail-panel\" hx-swap=\"innerHTML\" hx-on::config-request=\"if(window.innerWidth<768){var el=this;var lid=el.getAttribute('data-list-id');var tid=el.getAttribute('data-task-id');var lt=el.getAttribute('data-list-title');var qs=lt?'?listTitle='+encodeURIComponent(lt)+'&mobile=1':'?mobile=1';event.detail.path='/api/tasklists/'+lid+'/tasks/'+tid+'/detail'+qs;event.detail.target=document.getElementById('task-panel')}\" hx-on:click=\"document.querySelectorAll('[data-task-selected]').forEach(el => { el.removeAttribute('data-task-selected'); el.classList.remove('bg-blue-50', 'dark:bg-blue-900/20'); }); this.setAttribute('data-task-selected', ''); this.classList.add('bg-blue-50', 'dark:bg-blue-900/20');\" class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1651,8 +1651,10 @@ func toggleChildrenStop(taskID string) templ.ComponentScript {
 
 func toggleReschedule(taskID string) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_toggleReschedule_d6b9`,
-		Function: `function __templ_toggleReschedule_d6b9(taskID){event.stopPropagation();
+		Name: `__templ_toggleReschedule_372e`,
+		Function: `function __templ_toggleReschedule_372e(taskID){// On mobile, let the click propagate to open task detail instead
+	if (window.innerWidth < 768) return;
+	event.stopPropagation();
 	const el = document.getElementById('resched-' + taskID);
 	if (!el) return;
 	if (el.classList.contains('hidden')) {
@@ -1670,8 +1672,8 @@ func toggleReschedule(taskID string) templ.ComponentScript {
 		el.classList.remove('flex');
 	}
 }`,
-		Call:       templ.SafeScript(`__templ_toggleReschedule_d6b9`, taskID),
-		CallInline: templ.SafeScriptInline(`__templ_toggleReschedule_d6b9`, taskID),
+		Call:       templ.SafeScript(`__templ_toggleReschedule_372e`, taskID),
+		CallInline: templ.SafeScriptInline(`__templ_toggleReschedule_372e`, taskID),
 	}
 }
 
