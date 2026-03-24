@@ -1579,7 +1579,7 @@ func TaskDetailPanel(listID string, task tasks.Task, taskLists []tasks.TaskList)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 138, "\" hx-swap=\"beforeend\" hx-on::after-request=\"if(event.detail.successful){this.reset();}\"><input type=\"hidden\" name=\"depth\" value=\"1\"></form></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 138, "\" hx-swap=\"beforeend\" hx-on::after-request=\"if(event.detail.successful){this.reset();}\"><input type=\"hidden\" name=\"depth\" value=\"1\"></form><script>\n\t\t\t(function() {\n\t\t\t\tif (window.innerWidth >= 768) return;\n\t\t\t\tvar panel = document.querySelector('#task-panel') || document.querySelector('#detail-panel');\n\t\t\t\tif (!panel) return;\n\n\t\t\t\t// Rewrite all hx-target=\"#detail-panel\" to #task-panel\n\t\t\t\tpanel.querySelectorAll('[hx-target=\"#detail-panel\"]').forEach(function(el) {\n\t\t\t\t\tel.setAttribute('hx-target', '#task-panel');\n\t\t\t\t});\n\n\t\t\t\t// Add mobile=1 to delete button hx-delete URLs\n\t\t\t\tpanel.querySelectorAll('[hx-delete]').forEach(function(el) {\n\t\t\t\t\tvar url = el.getAttribute('hx-delete');\n\t\t\t\t\tel.setAttribute('hx-delete', url + (url.includes('?') ? '&' : '?') + 'mobile=1');\n\t\t\t\t});\n\n\t\t\t\t// Add mobile hidden input to the main PATCH form\n\t\t\t\tvar form = panel.querySelector('form[hx-patch]');\n\t\t\t\tif (form && !form.querySelector('input[name=mobile]')) {\n\t\t\t\t\tvar input = document.createElement('input');\n\t\t\t\t\tinput.type = 'hidden';\n\t\t\t\t\tinput.name = 'mobile';\n\t\t\t\t\tinput.value = '1';\n\t\t\t\t\tform.appendChild(input);\n\t\t\t\t}\n\n\t\t\t\t// Re-process HTMX on modified elements\n\t\t\t\tif (typeof htmx !== 'undefined') htmx.process(panel);\n\t\t\t})();\n\t\t</script></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1752,13 +1752,13 @@ func showSubtaskInput(taskID string) templ.ComponentScript {
 
 func setDueAndSubmit(due string) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_setDueAndSubmit_9522`,
-		Function: `function __templ_setDueAndSubmit_9522(due){const form = document.querySelector("#detail-panel form");
+		Name: `__templ_setDueAndSubmit_a6b5`,
+		Function: `function __templ_setDueAndSubmit_a6b5(due){const form = document.querySelector("#detail-panel form[hx-patch], #task-panel form[hx-patch]");
 	form.querySelector("[name=due]").value = due;
 	form.requestSubmit();
 }`,
-		Call:       templ.SafeScript(`__templ_setDueAndSubmit_9522`, due),
-		CallInline: templ.SafeScriptInline(`__templ_setDueAndSubmit_9522`, due),
+		Call:       templ.SafeScript(`__templ_setDueAndSubmit_a6b5`, due),
+		CallInline: templ.SafeScriptInline(`__templ_setDueAndSubmit_a6b5`, due),
 	}
 }
 

@@ -208,6 +208,15 @@ func (h *Handlers) HandleUpdateTask(c echo.Context) error {
 		if inToday {
 			task.ListColor = h.colors.Get(auth.GetEmail(c), listID)
 		}
+		// Mobile detail: redirect back to task list after toggle
+		if isMobileDetail(c) {
+			listParam := listID
+			if inToday {
+				listParam = "_today"
+			}
+			c.Response().Header().Set("HX-Redirect", "/dashboard?list="+listParam)
+			return c.NoContent(http.StatusOK)
+		}
 		return ViewTaskItem(listID, *task, inToday).Render(ctx, w)
 	}
 
@@ -289,6 +298,12 @@ func (h *Handlers) HandleDeleteTask(c echo.Context) error {
 
 	if err := client.DeleteTask(listID, taskID); err != nil {
 		return renderError(c, "Failed to delete task")
+	}
+
+	// Mobile detail: redirect back to task list
+	if isMobileDetail(c) {
+		c.Response().Header().Set("HX-Redirect", "/dashboard?list="+listID)
+		return c.NoContent(http.StatusOK)
 	}
 
 	// Return empty response (removes task item via hx-swap="outerHTML")
@@ -499,6 +514,12 @@ func (h *Handlers) HandleCycleListColor(c echo.Context) error {
 
 	activeListID := c.QueryParam("active")
 	return ViewTasklistSidebar(lists, activeListID).Render(c.Request().Context(), c.Response())
+}
+
+// isMobileDetail returns true when the request originated from the mobile
+// full-screen detail view (the detail was rendered into #task-panel).
+func isMobileDetail(c echo.Context) bool {
+	return c.QueryParam("mobile") == "1" || c.FormValue("mobile") == "1"
 }
 
 func readHideCompleted(c echo.Context) bool {

@@ -393,6 +393,37 @@ templ TaskDetailPanel(listID string, task tasks.Task, taskLists []tasks.TaskList
 		>
 			<input type="hidden" name="depth" value="1"/>
 		</form>
+		<script>
+			(function() {
+				if (window.innerWidth >= 768) return;
+				var panel = document.querySelector('#task-panel') || document.querySelector('#detail-panel');
+				if (!panel) return;
+
+				// Rewrite all hx-target="#detail-panel" to #task-panel
+				panel.querySelectorAll('[hx-target="#detail-panel"]').forEach(function(el) {
+					el.setAttribute('hx-target', '#task-panel');
+				});
+
+				// Add mobile=1 to delete button hx-delete URLs
+				panel.querySelectorAll('[hx-delete]').forEach(function(el) {
+					var url = el.getAttribute('hx-delete');
+					el.setAttribute('hx-delete', url + (url.includes('?') ? '&' : '?') + 'mobile=1');
+				});
+
+				// Add mobile hidden input to the main PATCH form
+				var form = panel.querySelector('form[hx-patch]');
+				if (form && !form.querySelector('input[name=mobile]')) {
+					var input = document.createElement('input');
+					input.type = 'hidden';
+					input.name = 'mobile';
+					input.value = '1';
+					form.appendChild(input);
+				}
+
+				// Re-process HTMX on modified elements
+				if (typeof htmx !== 'undefined') htmx.process(panel);
+			})();
+		</script>
 	</div>
 }
 
@@ -536,7 +567,7 @@ script showSubtaskInput(taskID string) {
 }
 
 script setDueAndSubmit(due string) {
-	const form = document.querySelector("#detail-panel form");
+	const form = document.querySelector("#detail-panel form[hx-patch], #task-panel form[hx-patch]");
 	form.querySelector("[name=due]").value = due;
 	form.requestSubmit();
 }
