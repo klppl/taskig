@@ -44,7 +44,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var2 = []any{"task-item group flex cursor-pointer items-center gap-2 border-b border-gray-100 px-3 py-2.5 transition-colors hover:bg-gray-50 dark:border-gray-800/50 dark:hover:bg-gray-800/30",
+		var templ_7745c5c3_Var2 = []any{"task-item group flex cursor-pointer items-center gap-2 border-b border-gray-100 px-3 py-3 md:py-2.5 transition-colors hover:bg-gray-50 dark:border-gray-800/50 dark:hover:bg-gray-800/30",
 			templ.KV("opacity-40", task.Completed),
 		}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
@@ -442,7 +442,7 @@ func TaskItem(listID string, task tasks.Task, inTodayView bool) templ.Component 
 				}
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "<!-- Checkbox --><span class=\"flex-shrink-0\" onclick=\"event.stopPropagation()\"><input type=\"checkbox\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "<!-- Checkbox --><span class=\"flex flex-shrink-0 items-center justify-center p-1\" onclick=\"event.stopPropagation()\"><input type=\"checkbox\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1579,7 +1579,7 @@ func TaskDetailPanel(listID string, task tasks.Task, taskLists []tasks.TaskList)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 138, "\" hx-swap=\"beforeend\" hx-on::after-request=\"if(event.detail.successful){this.reset();}\"><input type=\"hidden\" name=\"depth\" value=\"1\"></form><script>\n\t\t\t(function() {\n\t\t\t\tif (window.innerWidth >= 768) return;\n\t\t\t\tvar panel = document.querySelector('#task-panel') || document.querySelector('#detail-panel');\n\t\t\t\tif (!panel) return;\n\n\t\t\t\t// Rewrite all hx-target=\"#detail-panel\" to #task-panel\n\t\t\t\tpanel.querySelectorAll('[hx-target=\"#detail-panel\"]').forEach(function(el) {\n\t\t\t\t\tel.setAttribute('hx-target', '#task-panel');\n\t\t\t\t});\n\n\t\t\t\t// Add mobile=1 to delete button hx-delete URLs\n\t\t\t\tpanel.querySelectorAll('[hx-delete]').forEach(function(el) {\n\t\t\t\t\tvar url = el.getAttribute('hx-delete');\n\t\t\t\t\tel.setAttribute('hx-delete', url + (url.includes('?') ? '&' : '?') + 'mobile=1');\n\t\t\t\t});\n\n\t\t\t\t// Add mobile hidden input to the main PATCH form\n\t\t\t\tvar form = panel.querySelector('form[hx-patch]');\n\t\t\t\tif (form && !form.querySelector('input[name=mobile]')) {\n\t\t\t\t\tvar input = document.createElement('input');\n\t\t\t\t\tinput.type = 'hidden';\n\t\t\t\t\tinput.name = 'mobile';\n\t\t\t\t\tinput.value = '1';\n\t\t\t\t\tform.appendChild(input);\n\t\t\t\t}\n\n\t\t\t\t// Re-process HTMX on modified elements\n\t\t\t\tif (typeof htmx !== 'undefined') htmx.process(panel);\n\t\t\t})();\n\t\t</script></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 138, "\" hx-swap=\"beforeend\" hx-on::after-request=\"if(event.detail.successful){this.reset();}\"><input type=\"hidden\" name=\"depth\" value=\"1\"></form><script>\n\t\t\t(function() {\n\t\t\t\tif (window.innerWidth >= 768) return;\n\t\t\t\tvar panel = document.querySelector('#task-panel') || document.querySelector('#detail-panel');\n\t\t\t\tif (!panel) return;\n\n\t\t\t\t// Rewrite all hx-target=\"#detail-panel\" to #task-panel\n\t\t\t\tpanel.querySelectorAll('[hx-target=\"#detail-panel\"]').forEach(function(el) {\n\t\t\t\t\tel.setAttribute('hx-target', '#task-panel');\n\t\t\t\t});\n\n\t\t\t\t// Add mobile=1 (and inToday=1 if in Today view) to delete button hx-delete URLs\n\t\t\t\tvar inToday = window.location.search.includes('list=_today');\n\t\t\t\tpanel.querySelectorAll('[hx-delete]').forEach(function(el) {\n\t\t\t\t\tvar url = el.getAttribute('hx-delete');\n\t\t\t\t\tvar params = 'mobile=1' + (inToday ? '&inToday=1' : '');\n\t\t\t\t\tel.setAttribute('hx-delete', url + (url.includes('?') ? '&' : '?') + params);\n\t\t\t\t});\n\n\t\t\t\t// Add mobile hidden input to the main PATCH form\n\t\t\t\tvar form = panel.querySelector('form[hx-patch]');\n\t\t\t\tif (form && !form.querySelector('input[name=mobile]')) {\n\t\t\t\t\tvar input = document.createElement('input');\n\t\t\t\t\tinput.type = 'hidden';\n\t\t\t\t\tinput.name = 'mobile';\n\t\t\t\t\tinput.value = '1';\n\t\t\t\t\tform.appendChild(input);\n\t\t\t\t}\n\n\t\t\t\t// Re-process HTMX on modified elements\n\t\t\t\tif (typeof htmx !== 'undefined') htmx.process(panel);\n\t\t\t})();\n\t\t</script></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1608,13 +1608,6 @@ func listTitleQS(listTitle string) string {
 		return ""
 	}
 	return "?listTitle=" + url.QueryEscape(listTitle)
-}
-
-func mobileDetailQS(listTitle string) string {
-	if listTitle != "" {
-		return "?listTitle=" + url.QueryEscape(listTitle) + "&mobile=1"
-	}
-	return "?mobile=1"
 }
 
 func toggleChildren(taskID string) templ.ComponentScript {

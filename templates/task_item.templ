@@ -404,10 +404,12 @@ templ TaskDetailPanel(listID string, task tasks.Task, taskLists []tasks.TaskList
 					el.setAttribute('hx-target', '#task-panel');
 				});
 
-				// Add mobile=1 to delete button hx-delete URLs
+				// Add mobile=1 (and inToday=1 if in Today view) to delete button hx-delete URLs
+				var inToday = window.location.search.includes('list=_today');
 				panel.querySelectorAll('[hx-delete]').forEach(function(el) {
 					var url = el.getAttribute('hx-delete');
-					el.setAttribute('hx-delete', url + (url.includes('?') ? '&' : '?') + 'mobile=1');
+					var params = 'mobile=1' + (inToday ? '&inToday=1' : '');
+					el.setAttribute('hx-delete', url + (url.includes('?') ? '&' : '?') + params);
 				});
 
 				// Add mobile hidden input to the main PATCH form
@@ -450,12 +452,6 @@ func listTitleQS(listTitle string) string {
 	return "?listTitle=" + url.QueryEscape(listTitle)
 }
 
-func mobileDetailQS(listTitle string) string {
-	if listTitle != "" {
-		return "?listTitle=" + url.QueryEscape(listTitle) + "&mobile=1"
-	}
-	return "?mobile=1"
-}
 
 script toggleChildren(taskID string) {
 	const el = document.getElementById('children-' + taskID);

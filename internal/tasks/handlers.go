@@ -302,7 +302,11 @@ func (h *Handlers) HandleDeleteTask(c echo.Context) error {
 
 	// Mobile detail: redirect back to task list
 	if isMobileDetail(c) {
-		c.Response().Header().Set("HX-Redirect", "/dashboard?list="+listID)
+		listParam := listID
+		if c.QueryParam("inToday") == "1" || c.FormValue("inToday") == "1" {
+			listParam = "_today"
+		}
+		c.Response().Header().Set("HX-Redirect", "/dashboard?list="+listParam)
 		return c.NoContent(http.StatusOK)
 	}
 

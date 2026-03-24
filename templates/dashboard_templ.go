@@ -159,7 +159,7 @@ func DashboardPage(taskLists []tasks.TaskList, activeListID string, activeTasks 
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</main><!-- Detail panel --><aside id=\"detail-panel\" class=\"hidden w-96 flex-shrink-0 overflow-y-auto border-l border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 lg:block\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</main><!-- Detail panel --><aside id=\"detail-panel\" class=\"hidden w-96 flex-shrink-0 overflow-y-auto border-l border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 md:block\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
