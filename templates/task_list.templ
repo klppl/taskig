@@ -334,8 +334,13 @@ templ sortableInit() {
 				onStart: function() { highlightSidebar(); },
 				onEnd: function(evt) {
 					clearSidebar();
-					// If dropped back in the same list, handle reorder
-					if (evt.to === list && evt.oldIndex !== evt.newIndex) {
+					// Cross-list drop: remove original from source for instant feedback
+					if (evt.to !== list) {
+						evt.item.remove();
+						return;
+					}
+					// Within-list reorder
+					if (evt.oldIndex !== evt.newIndex) {
 						var item = evt.item;
 						var taskId = item.dataset.taskId;
 						var prev = item.previousElementSibling;
@@ -361,6 +366,7 @@ templ sortableInit() {
 
 				var s = Sortable.create(el, {
 					group: { name: 'tasks', pull: false, put: true },
+					sort: false,
 					onAdd: function(evt) {
 						var taskId = evt.item.dataset.taskId;
 						var destListId = evt.to.dataset.listId;
