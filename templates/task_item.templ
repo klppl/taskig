@@ -126,9 +126,9 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 				</span>
 			}
 		</div>
-		<!-- Hover actions -->
-		<div class="flex flex-shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
-			if !inTodayView {
+		<!-- Hover actions (list view only) -->
+		if !inTodayView {
+			<div class="flex flex-shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
 				<button
 					type="button"
 					onclick={ showSubtaskInput(task.ID) }
@@ -139,20 +139,20 @@ templ TaskItem(listID string, task tasks.Task, inTodayView bool) {
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
 					</svg>
 				</button>
-			}
-			<button
-				hx-delete={ "/api/tasklists/" + listID + "/tasks/" + task.ID }
-				hx-target={ "#task-" + task.ID }
-				hx-swap="outerHTML"
-				hx-on::after-request="document.getElementById('detail-panel').innerHTML = document.getElementById('detail-empty-tpl') ? document.getElementById('detail-empty-tpl').innerHTML : '';"
-				hx-confirm={ i18n.T(ctx, "delete_task_confirm") }
-				class="rounded-md p-1 text-gray-400 transition hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400"
-			>
-				<svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-				</svg>
-			</button>
-		</div>
+				<button
+					hx-delete={ "/api/tasklists/" + listID + "/tasks/" + task.ID }
+					hx-target={ "#task-" + task.ID }
+					hx-swap="outerHTML"
+					hx-on::after-request="document.getElementById('detail-panel').innerHTML = document.getElementById('detail-empty-tpl') ? document.getElementById('detail-empty-tpl').innerHTML : '';"
+					hx-confirm={ i18n.T(ctx, "delete_task_confirm") }
+					class="rounded-md p-1 text-gray-400 transition hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+				>
+					<svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+					</svg>
+				</button>
+			</div>
+		}
 	</div>
 }
 
