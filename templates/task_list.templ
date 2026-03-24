@@ -292,7 +292,37 @@ templ sortableInit() {
 		(function() {
 			const list = document.getElementById('task-list');
 			if (!list || !list.dataset.listId) return;
+			const currentListId = list.dataset.listId;
+
+			// Destroy previous instances
 			if (list._sortable) list._sortable.destroy();
+			if (window._sidebarSortables) {
+				window._sidebarSortables.forEach(function(s) { s.destroy(); });
+			}
+			window._sidebarSortables = [];
+
+			// Helpers for sidebar highlight
+			function highlightSidebar() {
+				var items = document.querySelectorAll('#tasklist-sidebar [data-list-id]');
+				for (var i = 0; i < items.length; i++) {
+					var el = items[i];
+					var id = el.dataset.listId;
+					if (id === currentListId || id === '_today') {
+						el.classList.add('drop-disabled');
+					} else {
+						el.classList.add('drop-target');
+					}
+				}
+			}
+
+			function clearSidebar() {
+				var items = document.querySelectorAll('#tasklist-sidebar [data-list-id]');
+				for (var i = 0; i < items.length; i++) {
+					items[i].classList.remove('drop-target', 'drop-disabled');
+				}
+			}
+
+			// Within-list reorder + cross-list pull
 			list._sortable = Sortable.create(list, {
 				animation: 150,
 				ghostClass: 'opacity-30',
@@ -300,23 +330,50 @@ templ sortableInit() {
 				preventOnFilter: false,
 				delay: 150,
 				delayOnTouchOnly: true,
+				group: { name: 'tasks', pull: 'clone', put: false },
+				onStart: function() { highlightSidebar(); },
 				onEnd: function(evt) {
-					if (evt.oldIndex === evt.newIndex) return;
-					const item = evt.item;
-					const taskId = item.dataset.taskId;
-					const listId = list.dataset.listId;
-					const prev = item.previousElementSibling;
-					const previousId = (prev && prev.dataset.taskId) || '';
-					fetch('/api/tasklists/' + listId + '/tasks/' + taskId + '/move', {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/x-www-form-urlencoded',
-							'X-Requested-With': 'XMLHttpRequest'
-						},
-						body: 'previous=' + encodeURIComponent(previousId)
-					}).catch(function() { location.reload(); });
+					clearSidebar();
+					// If dropped back in the same list, handle reorder
+					if (evt.to === list && evt.oldIndex !== evt.newIndex) {
+						var item = evt.item;
+						var taskId = item.dataset.taskId;
+						var prev = item.previousElementSibling;
+						var previousId = (prev && prev.dataset.taskId) || '';
+						fetch('/api/tasklists/' + currentListId + '/tasks/' + taskId + '/move', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/x-www-form-urlencoded',
+								'X-Requested-With': 'XMLHttpRequest'
+							},
+							body: 'previous=' + encodeURIComponent(previousId)
+						}).catch(function() { location.reload(); });
+					}
 				}
 			});
+
+			// Sidebar drop zones
+			var sidebarItems = document.querySelectorAll('#tasklist-sidebar [data-list-id]');
+			for (var i = 0; i < sidebarItems.length; i++) {
+				var el = sidebarItems[i];
+				var destId = el.dataset.listId;
+				if (destId === currentListId || destId === '_today') continue;
+
+				var s = Sortable.create(el, {
+					group: { name: 'tasks', pull: false, put: true },
+					onAdd: function(evt) {
+						var taskId = evt.item.dataset.taskId;
+						var destListId = evt.to.dataset.listId;
+						evt.item.remove();
+						clearSidebar();
+						htmx.ajax('POST',
+							'/api/tasklists/' + currentListId + '/tasks/' + taskId + '/move-to-list',
+							{ swap: 'none', values: { destListId: destListId } }
+						).catch(function() { location.reload(); });
+					}
+				});
+				window._sidebarSortables.push(s);
+			}
 		})();
 	</script>
 }
