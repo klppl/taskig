@@ -288,16 +288,6 @@ func (h *Handlers) HandleGetDetail(c echo.Context) error {
 
 	task.Children = subtasks
 	task.ListTitle = c.QueryParam("listTitle")
-
-	// Mobile detail: let HTMX manage history so back button works
-	if isMobileDetail(c) {
-		backList := listID
-		if task.ListTitle != "" {
-			backList = "_today"
-		}
-		c.Response().Header().Set("HX-Push-Url", "/dashboard?list="+backList+"&task="+taskID)
-	}
-
 	return ViewTaskDetailPanel(listID, *task, lists).Render(c.Request().Context(), c.Response())
 }
 

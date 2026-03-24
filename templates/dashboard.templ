@@ -103,6 +103,25 @@ templ DashboardPage(taskLists []tasks.TaskList, activeListID string, activeTasks
 				document.getElementById('sidebar').classList.add('-translate-x-full');
 				document.getElementById('sidebar-backdrop').classList.add('hidden');
 			}
+			function closeDetail() {
+				var p = document.getElementById('detail-panel');
+				p.classList.add('hidden');
+				p.classList.remove('fixed','inset-0','z-50','w-full');
+			}
+			// On mobile, show detail-panel as full-screen overlay when content loads
+			document.body.addEventListener('htmx:afterSwap', function(evt) {
+				if (window.innerWidth >= 768) return;
+				var t = evt.detail.target;
+				if (t.id === 'detail-panel') {
+					// Check if it's real content (not the empty placeholder)
+					if (t.querySelector('form')) {
+						t.classList.remove('hidden','w-96','border-l');
+						t.classList.add('fixed','inset-0','z-50','w-full');
+					} else {
+						closeDetail();
+					}
+				}
+			});
 		</script>
 	}
 }

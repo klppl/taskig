@@ -62,7 +62,6 @@ templ TaskListContent(listID string, listTitle string, taskItems []tasks.Task, h
 			@listSections(listID, taskItems, hideCompleted)
 		}
 		@sortableInit()
-		@mobileTaskInit()
 	</div>
 }
 
@@ -198,7 +197,6 @@ templ TodayContent(taskItems []tasks.Task) {
 		} else {
 			@todaySections(taskItems)
 		}
-		@mobileTaskInit()
 	</div>
 }
 
@@ -319,23 +317,6 @@ templ sortableInit() {
 					}).catch(function() { location.reload(); });
 				}
 			});
-		})();
-	</script>
-}
-
-templ mobileTaskInit() {
-	<script>
-		(function() {
-			if (window.innerWidth >= 768) return;
-			document.querySelectorAll('.task-item[hx-target="#detail-panel"]').forEach(function(el) {
-				var lid = el.getAttribute('data-list-id');
-				var tid = el.getAttribute('data-task-id');
-				var lt = el.getAttribute('data-list-title');
-				var qs = lt ? '?listTitle=' + encodeURIComponent(lt) + '&mobile=1' : '?mobile=1';
-				el.setAttribute('hx-get', '/api/tasklists/' + lid + '/tasks/' + tid + '/detail' + qs);
-				el.setAttribute('hx-target', '#task-panel');
-			});
-			htmx.process(document.getElementById('task-panel'));
 		})();
 	</script>
 }
