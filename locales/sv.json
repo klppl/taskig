@@ -45,6 +45,8 @@
   "status": "Status:",
   "completed": "Slutf\u00f6rd",
   "active": "Aktiv",
+  "active_tasks": "Aktiva",
+  "completed_tasks": "Slutf\u00f6rda",
   "subtasks": "Underuppgifter",
   "list": "Lista",
   "add_subtask": "L\u00e4gg till underuppgift",

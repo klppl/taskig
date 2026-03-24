@@ -45,6 +45,8 @@
   "status": "Status:",
   "completed": "Completed",
   "active": "Active",
+  "active_tasks": "Active",
+  "completed_tasks": "Completed",
   "subtasks": "Subtasks",
   "list": "List",
   "add_subtask": "Add subtask",

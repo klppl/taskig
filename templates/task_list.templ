@@ -36,40 +36,9 @@ templ TaskListContent(listID string, listTitle string, taskItems []tasks.Task, h
 				</button>
 			</div>
 		</div>
-		<!-- Task list -->
-		<div id="task-list" data-list-id={ listID } class="task-list">
-			<!-- Inline add task (ghost row) -->
-			<form
-				hx-post={ "/api/tasklists/" + listID + "/tasks" }
-				hx-target="#task-list"
-				hx-swap="afterbegin"
-				hx-on::after-request="this.reset(); this.querySelector('input').blur();"
-				class="group/form"
-			>
-				<div class="flex items-center gap-3 border-b border-transparent px-3 py-2.5 transition-all focus-within:border-gray-100 focus-within:bg-white dark:focus-within:border-gray-800/50 dark:focus-within:bg-gray-800/20">
-					<svg class="h-4 w-4 flex-shrink-0 text-gray-300 transition group-focus-within/form:text-blue-500 dark:text-gray-600 dark:group-focus-within/form:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-					</svg>
-					<input
-						type="text"
-						name="title"
-						placeholder={ i18n.T(ctx, "add_task_placeholder") }
-						required
-						class="flex-1 bg-transparent text-sm placeholder-gray-300 outline-none transition focus:placeholder-gray-400 dark:placeholder-gray-600 dark:focus:placeholder-gray-500"
-					/>
-					<button
-						type="submit"
-						class="hidden rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-blue-700 group-focus-within/form:block dark:bg-blue-500 dark:hover:bg-blue-600"
-					>
-						{ i18n.T(ctx, "add") }
-					</button>
-				</div>
-			</form>
-			for _, task := range taskItems {
-				@TaskTree(listID, task, 0)
-			}
-		</div>
 		if len(taskItems) == 0 {
+			<!-- Inline add task -->
+			@addTaskForm(listID)
 			<div class="flex flex-col items-center justify-center py-12 text-center">
 				<div class="mb-3 rounded-full bg-gray-100 p-3 dark:bg-gray-800">
 					<svg class="h-6 w-6 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -78,9 +47,105 @@ templ TaskListContent(listID string, listTitle string, taskItems []tasks.Task, h
 				</div>
 				<p class="text-sm text-gray-400 dark:text-gray-500">{ i18n.T(ctx, "no_tasks_in_list") }</p>
 			</div>
+		} else {
+			@listSections(listID, taskItems, hideCompleted)
 		}
 		@sortableInit()
 	</div>
+}
+
+templ addTaskForm(listID string) {
+	<form
+		hx-post={ "/api/tasklists/" + listID + "/tasks" }
+		hx-target="#task-list"
+		hx-swap="afterbegin"
+		hx-on::after-request="this.reset(); this.querySelector('input').blur();"
+		class="group/form"
+	>
+		<div class="flex items-center gap-3 border-b border-transparent px-3 py-2.5 transition-all focus-within:border-gray-100 focus-within:bg-white dark:focus-within:border-gray-800/50 dark:focus-within:bg-gray-800/20">
+			<svg class="h-4 w-4 flex-shrink-0 text-gray-300 transition group-focus-within/form:text-blue-500 dark:text-gray-600 dark:group-focus-within/form:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+			</svg>
+			<input
+				type="text"
+				name="title"
+				placeholder={ i18n.T(ctx, "add_task_placeholder") }
+				required
+				class="flex-1 bg-transparent text-sm placeholder-gray-300 outline-none transition focus:placeholder-gray-400 dark:placeholder-gray-600 dark:focus:placeholder-gray-500"
+			/>
+			<button
+				type="submit"
+				class="hidden rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-blue-700 group-focus-within/form:block dark:bg-blue-500 dark:hover:bg-blue-600"
+			>
+				{ i18n.T(ctx, "add") }
+			</button>
+		</div>
+	</form>
+}
+
+templ listSections(listID string, taskItems []tasks.Task, hideCompleted bool) {
+	<!-- Active section -->
+	<div class="mb-6">
+		<div class="mb-2 flex items-center gap-2">
+			<span class="inline-block h-2 w-2 rounded-full bg-blue-500"></span>
+			<h2 class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{ i18n.T(ctx, "active_tasks") }</h2>
+			<span class="text-xs text-gray-400 dark:text-gray-500">{ fmt.Sprintf("%d", countActiveTasks(taskItems)) }</span>
+		</div>
+		<div id="task-list" data-list-id={ listID } class="task-list">
+			@addTaskForm(listID)
+			for _, task := range taskItems {
+				if !task.Completed {
+					@TaskTree(listID, task, 0)
+				}
+			}
+		</div>
+	</div>
+	<!-- Completed section -->
+	if !hideCompleted && hasCompletedTasks(taskItems) {
+		<div>
+			<div class="mb-2 flex items-center gap-2">
+				<span class="inline-block h-2 w-2 rounded-full bg-green-500"></span>
+				<h2 class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{ i18n.T(ctx, "completed_tasks") }</h2>
+				<span class="text-xs text-gray-400 dark:text-gray-500">{ fmt.Sprintf("%d", countCompletedTasks(taskItems)) }</span>
+			</div>
+			<div class="task-list rounded-lg border border-green-200/40 bg-green-50/20 dark:border-green-900/20 dark:bg-green-950/10">
+				for _, task := range taskItems {
+					if task.Completed {
+						@TaskTree(listID, task, 0)
+					}
+				}
+			</div>
+		</div>
+	}
+}
+
+func countActiveTasks(ts []tasks.Task) int {
+	n := 0
+	for _, t := range ts {
+		if !t.Completed {
+			n++
+		}
+	}
+	return n
+}
+
+func countCompletedTasks(ts []tasks.Task) int {
+	n := 0
+	for _, t := range ts {
+		if t.Completed {
+			n++
+		}
+	}
+	return n
+}
+
+func hasCompletedTasks(ts []tasks.Task) bool {
+	for _, t := range ts {
+		if t.Completed {
+			return true
+		}
+	}
+	return false
 }
 
 templ TodayContent(taskItems []tasks.Task) {
