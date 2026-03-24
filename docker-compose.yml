@@ -1,6 +1,6 @@
 services:
   app:
-    build: .
+    image: ghcr.io/klppl/taskig:latest
     ports:
       - "8080:8080"
     env_file: .env
